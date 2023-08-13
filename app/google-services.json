@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "984303206594",
+    "project_id": "testfirebase-804c8",
+    "storage_bucket": "testfirebase-804c8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:984303206594:android:a4d7e836466a5c9302fb5b",
+        "android_client_info": {
+          "package_name": "ru.test.andernam"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "984303206594-sp6e69d4106pafu4ahn2knt95mc305iq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAkypVg1tSmEUIzseb9KZbmdH9Al20psQM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "984303206594-sp6e69d4106pafu4ahn2knt95mc305iq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
