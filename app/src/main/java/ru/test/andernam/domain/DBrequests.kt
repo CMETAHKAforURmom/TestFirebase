@@ -20,7 +20,7 @@ import kotlin.coroutines.CoroutineContext
 var userData: Pair<Uri?, String?> = Pair(null, null)
 var stillDoing = true
 
-fun startDownload(user: FirebaseUser?){
+fun startDownload(user: FirebaseUser?) {
 
     var loadDefault = "Still loading, please wait"
 
@@ -62,15 +62,17 @@ fun startDownload(user: FirebaseUser?){
             }
             .addOnCompleteListener {
 
-                    name = allDataAboutMap["clientData"].toString()
-                    profilePhotoPath = allDataAboutMap["profilePhoto"].toString()
-                if (profilePhotoPath!!.contains("//")) {
-                    storage.getReferenceFromUrl(profilePhotoPath!!).downloadUrl.addOnSuccessListener { result ->
-                        profilePhotoUri = result
-                    }
-                } else
-                    profilePhotoUri =
-                        Uri.parse("https://mriyaresort.com/local/templates/.default/assets/img/loader/loading-thumb.gif")
+                name = allDataAboutMap["clientData"].toString()
+                profilePhotoPath = allDataAboutMap["profilePhoto"].toString()
+                if (profilePhotoPath != null)
+                    profilePhotoUri = Uri.parse(profilePhotoPath!!)
+//                if (profilePhotoPath!!.contains("//")) {
+//                    storage.getReferenceFromUrl(profilePhotoPath!!).downloadUrl.addOnSuccessListener { result ->
+//                        profilePhotoUri = result
+//                    }
+//                } else
+//                    profilePhotoUri =
+//                        Uri.parse("https://mriyaresort.com/local/templates/.default/assets/img/loader/loading-thumb.gif")
                 userData = Pair(profilePhotoUri, name)
                 stillDoing = false
             }

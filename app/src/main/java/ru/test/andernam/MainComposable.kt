@@ -36,6 +36,8 @@ import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.storage.StorageReference
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import ru.test.andernam.domain.startDownload
 import ru.test.andernam.domain.stillDoing
 import ru.test.andernam.domain.userData
@@ -77,15 +79,18 @@ fun MainComp(navController: NavController) {
         startDownload(user)
     }
 
-    while(!stillDoing){
-            if (userData.second != null) {
-                var (Uri, Name) = userData
-                Log.i("isComplete_Main", "true")
-                localUri = Uri
-                localName = Name!!
-            }else
-                Log.i("UserDataIsNull", "It null")
-        }
+//    while(!stillDoing){
+    coroutineScope.launch {
+        delay(4000L)
+        if (userData.second != null) {
+            var (Uri, Name) = userData
+            localUri = Uri
+            localName = Name!!
+        }else
+            Log.i("UserDataIsNull", "It null")
+    }
+
+//        }
 
     var launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         if (uri != null) {
