@@ -2,27 +2,46 @@ package ru.test.andernam.domain
 
 import android.net.Uri
 import android.util.Log
-import androidx.compose.ui.platform.LocalContext
+import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseUser
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
-import ru.test.andernam.contextActivity
-import ru.test.andernam.database
-import ru.test.andernam.dbState
-import ru.test.andernam.docExist
-import ru.test.andernam.iDoIt
-import ru.test.andernam.storage
-import ru.test.andernam.user
-import kotlin.coroutines.CoroutineContext
+import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.ktx.storage
+import ru.test.andernam.setPair
+import java.util.UUID
 
+lateinit var database: FirebaseFirestore
+lateinit var storage: FirebaseStorage
+var docExist = false
+lateinit var dbState: Task<DocumentSnapshot>
+private var idClient: String? = null
 
-var userData: Pair<Uri?, String?> = Pair(null, null)
-var stillDoing = true
+fun setClient(number: String){
+    idClient = number!!
+}
 
-fun startDownload(user: FirebaseUser?) {
+fun uploadInfo(localFile: Uri, info: String) {
+    if(idClient != null) {
+        var newName = UUID.randomUUID().toString()
+        var imageCloudReference = storage.getReference("$idClient!!/$newName")
+        var uploadTask = imageCloudReference.putFile(localFile).addOnSuccessListener {
+            imageCloudReference.downloadUrl.addOnSuccessListener { result ->
+                database.collection("usersData").document(idClient!!)
+                    .update("profilePhoto", result)
+                Log.i("PHOTO is: ", result.toString())
+            }
+        }
+        database.collection("usersData").document(idClient!!).update("clientData", info)
+    }
+}
 
-    var loadDefault = "Still loading, please wait"
+fun startDownload() {
+    database = Firebase.firestore
+    storage = Firebase.storage
+    var userData: Pair<Uri?, String?> = Pair(null, null)
 
     val mapIfDocNotExist: Map<String, String> = mapOf("clientData" to " ", "profilePhoto" to " ")
 
@@ -32,23 +51,17 @@ fun startDownload(user: FirebaseUser?) {
 
     var profilePhotoPath: String? = null
 
-    var idClient: String? = null
-
-    if (user != null)
-        if (user.phoneNumber != null)
-            idClient = user.phoneNumber!!
-
     var name = "Some Name"
 
     if (idClient != null) {
 
-        dbState = database.collection("usersData").document(idClient).get()
+        dbState = database.collection("usersData").document(idClient!!).get()
             .addOnSuccessListener { document ->
                 if (document.exists()) {
                     allDataAboutMap = document.data!!
                     docExist = true
                 } else {
-                    database.collection("usersData").document(idClient)
+                    database.collection("usersData").document(idClient!!)
                         .set(mapIfDocNotExist)
                         .addOnSuccessListener {
                             Log.i("Creating new doc", "Success!")
@@ -74,7 +87,7 @@ fun startDownload(user: FirebaseUser?) {
 //                    profilePhotoUri =
 //                        Uri.parse("https://mriyaresort.com/local/templates/.default/assets/img/loader/loading-thumb.gif")
                 userData = Pair(profilePhotoUri, name)
-                stillDoing = false
+                setPair(userData)
             }
     }
 

@@ -1,7 +1,6 @@
 package ru.test.andernam
 
 import android.net.Uri
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
@@ -17,6 +16,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -26,28 +26,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.google.android.gms.tasks.Task
-import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.storage.StorageReference
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import ru.test.andernam.domain.startDownload
-import ru.test.andernam.domain.stillDoing
-import ru.test.andernam.domain.userData
-import java.util.UUID
-import kotlin.concurrent.thread
+import ru.test.andernam.domain.signOut
+import ru.test.andernam.domain.uploadInfo
 
 
-lateinit var dbState: Task<DocumentSnapshot>
-var iDoIt = true
-var docExist = false
+private var localPair: MutableState<Pair<Uri?, String?>> = mutableStateOf( Pair(Uri.EMPTY, null))
+fun setPair(userDataPair : Pair<Uri?, String?>){
+    localPair.value = userDataPair
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -55,13 +47,7 @@ fun MainComp(navController: NavController) {
 
     var loadDefault = "Still loading, please wait"
 
-    var coroutineScope = rememberCoroutineScope()
-
-    val mapIfDocNotExist: Map<String, String> = mapOf("clientData" to " ", "profilePhoto" to " ")
-
-    var allDataAboutMap: Map<String?, Any> by remember {
-        mutableMapOf()
-    }
+    var uriForUpload = Uri.EMPTY
 
     var localUri by remember {
         mutableStateOf(Uri.EMPTY)
@@ -74,34 +60,26 @@ fun MainComp(navController: NavController) {
     var localProfilePhotoUri  by remember {
         mutableStateOf(Uri.EMPTY)
     }
-
-    val result = coroutineScope.async {
-        startDownload(user)
+    var isPairUpdated by remember {
+        mutableStateOf(true)
     }
+    var coroutine = rememberCoroutineScope()
 
-//    while(!stillDoing){
-    coroutineScope.launch {
-        delay(4000L)
-        if (userData.second != null) {
-            var (Uri, Name) = userData
+
+    if(isPairUpdated) {
+        if (localPair.value.second != null) {
+            isPairUpdated = false
+            var (Uri, Name) = localPair.value
             localUri = Uri
             localName = Name!!
-        }else
-            Log.i("UserDataIsNull", "It null")
-    }
-
-//        }
-
-    var launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
-        if (uri != null) {
-            localUri = uri
         }
     }
 
 
-    auth.addAuthStateListener { listener ->
-        if(listener.currentUser == null){
-            navController.navigate(Routes.Enter.route)
+    var launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        if (uri != null) {
+            localUri = uri
+            uriForUpload = uri
         }
     }
 
@@ -138,6 +116,8 @@ fun MainComp(navController: NavController) {
 
             Button(
                 onClick = {
+
+                          uploadInfo(uriForUpload, localName)
 //                    imageRef = storage.reference.child(localUri.toString())
 //                    var newName = UUID.randomUUID().toString()
 //                    var imageCloudReference = storage.getReference("$idClient/$newName")
@@ -161,10 +141,9 @@ fun MainComp(navController: NavController) {
                     .align(Alignment.CenterHorizontally)
                     .fillMaxWidth(0.5f),
                 onClick = {
-                    auth.signOut()
-                    user = null
-                    iDoIt = true
-                    docExist = false
+                    signOut()
+                    navController.navigate(Routes.Enter.route)
+                    isPairUpdated = true
                 }
             ){
                 Text(text = "Sign out")
