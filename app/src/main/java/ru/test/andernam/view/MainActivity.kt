@@ -1,16 +1,13 @@
-package ru.test.andernam
+package ru.test.andernam.view
 
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.ui.Modifier
 import ru.test.andernam.domain.start
 import ru.test.andernam.ui.theme.TestFirebaseTheme
+import ru.test.andernam.view.ui_parts.Scaffold.mainScaffold
 import kotlin.concurrent.thread
 
 
@@ -20,13 +17,14 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             TestFirebaseTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    Navigation()
-                }
+
+                mainScaffold()
+//                Surface(
+//                    modifier = Modifier.fillMaxSize(),
+//                    color = MaterialTheme.colorScheme.background
+//                ) {
+//
+//                }
             }
         }
         thread {
