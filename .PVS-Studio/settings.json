@@ -1,0 +1,27 @@
+{
+  "threads": 10,
+  "incremental": false,
+  "runJavaWithAddOpensForReflectiveAccess": false,
+  "verbose": false,
+  "disable-cache": false,
+  "exclude": [],
+  "include-generated": false,
+  "fail-on-warnings": false,
+  "analysis-mode": [
+    "GA"
+  ],
+  "launch-mode": "CORE",
+  "disabled-warnings": [],
+  "enabled-warnings": [],
+  "additional-warnings": [],
+  "benchmark": false,
+  "java": "java",
+  "jvm-arguments": [
+    "-Xss64m"
+  ],
+  "suppress-base": ".PVS-Studio/suppress_base.json",
+  "timeout": 10,
+  "logging": "OFF",
+  "compatibility": false,
+  "exclude-packages": []
+}
