@@ -46,13 +46,7 @@ fun start(contextActivity: Activity) {
     activity = contextActivity
     auth = FirebaseAuth.getInstance()
     auth.setLanguageCode("ru")
-    if (auth.currentUser != null) {
-        user = auth.currentUser
-        if (user?.phoneNumber != null)
-            setClient(user?.phoneNumber!!)
-        startDownload()
-        navigateTo(Routes.Main)
-    }
+
     callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
 
         override fun onVerificationCompleted(credential: PhoneAuthCredential) {
@@ -79,6 +73,15 @@ fun start(contextActivity: Activity) {
             resendToken = token
         }
     }
+
+    if (auth.currentUser != null) {
+        user = auth.currentUser
+        if (user?.phoneNumber != null)
+            setClient(user?.phoneNumber!!)
+        startDownload()
+        navigateTo(Routes.Main)
+    }
+
 }
 
 fun signInWithCode(code: String) {

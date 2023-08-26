@@ -41,7 +41,7 @@ fun BottomNavigationItemBtn(action: () -> Unit, description: String){
 @Composable
 fun findIconByDescription(description: String): ImageVector{
     when(description){
-        "Send" -> return Icons.Default.Send
+        "Users" -> return Icons.Default.Send
         "Profile" -> return Icons.Default.AccountBox
         else -> return Icons.Default.Build
     }

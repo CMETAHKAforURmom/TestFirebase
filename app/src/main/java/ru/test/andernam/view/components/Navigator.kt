@@ -10,7 +10,9 @@ import androidx.navigation.compose.rememberNavController
 import ru.test.andernam.view.ui_parts.BlogComp
 import ru.test.andernam.view.ui_parts.EnteredComp
 import ru.test.andernam.view.ui_parts.MainComp
+import ru.test.andernam.view.ui_parts.Scaffold.isMessageShowHelper
 import ru.test.andernam.view.ui_parts.Scaffold.isShowHelper
+import ru.test.andernam.view.ui_parts.SendMessageScreen
 
 var isNavigatorAskd = false
 
@@ -28,9 +30,16 @@ fun Navigation() {
         composable(Routes.Main.route){
             MainComp()
             isShowHelper.value = true
+            isMessageShowHelper.value = false
         }
         composable(Routes.Blog.route){
             BlogComp()
+            isShowHelper.value = true
+            isMessageShowHelper.value = false
+        }
+        composable(Routes.Message.route){
+            SendMessageScreen()
+            isMessageShowHelper.value = true
         }
     }
 }
@@ -39,4 +48,5 @@ sealed class Routes(val route: String){
     object Enter: Routes("Start")
     object Main: Routes("Main")
     object Blog: Routes("Blog")
+    object Message: Routes("Message")
 }
