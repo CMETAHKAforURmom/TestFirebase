@@ -25,6 +25,7 @@ private lateinit var auth: FirebaseAuth
 private var user: FirebaseUser? = null
 private lateinit var activity: Activity
 
+
 fun signOut() {
     auth.signOut()
     user = null
