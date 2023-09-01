@@ -44,7 +44,7 @@ fun setPair(userDataPair : Pair<Uri?, String?>){
 @Composable
 fun MainComp() {
 
-    var loadDefault = "Still loading, please wait"
+    val loadDefault = "Still loading, please wait"
 
     var uriForUpload by remember {
         mutableStateOf(Uri.EMPTY)
@@ -58,7 +58,7 @@ fun MainComp() {
         mutableStateOf(loadDefault)
     }
 
-    var localProfilePhotoUri  by remember {
+    val localProfilePhotoUri  by remember {
         mutableStateOf(Uri.EMPTY)
     }
     var isPairUpdated by remember {
@@ -68,14 +68,14 @@ fun MainComp() {
     if(isPairUpdated) {
         if (localPair.value.second != null) {
             isPairUpdated = false
-            var (Uri, Name) = localPair.value
+            val (Uri, Name) = localPair.value
             localUri = Uri
             localName = Name!!
         }
     }
 
 
-    var launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         if (uri != null) {
             localUri = uri
             uriForUpload = uri
@@ -86,8 +86,7 @@ fun MainComp() {
 
         Column(
             Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(0.8f)
+                .fillMaxSize()
                 .padding(horizontal = 15.dp), verticalArrangement = Arrangement.SpaceEvenly
         ) {
 

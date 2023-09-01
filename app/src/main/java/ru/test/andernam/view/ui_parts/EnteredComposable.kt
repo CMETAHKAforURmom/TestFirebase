@@ -1,8 +1,5 @@
 package ru.test.andernam.view.ui_parts
 
-import android.graphics.Paint.Align
-import android.widget.Space
-import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -27,7 +24,6 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -46,6 +42,8 @@ import androidx.compose.ui.unit.dp
 import ru.test.andernam.R
 import ru.test.andernam.domain.enterAcc
 import ru.test.andernam.domain.signInWithCode
+import ru.test.andernam.view.components.Routes
+import ru.test.andernam.view.components.navigateTo
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -56,28 +54,29 @@ fun EnteredComp() {
         mutableStateOf(false)
     }
 
-    val options: Map<String, Painter> = mapOf<String, Painter>(
+
+    val options: Map<String, Painter> = mapOf(
         "+7" to painterResource(id = R.drawable.russia),
         "+380" to painterResource(id = R.drawable.ukraine),
         "+375" to painterResource(id = R.drawable.belarus)
     )
 
-    var defaultFlag = painterResource(id = R.drawable.russia)
+    val defaultFlag = painterResource(id = R.drawable.russia)
 
     var selectedOptionText by remember {
         mutableStateOf(Pair("+7", options.getOrDefault("+7", defaultFlag)))
     }
 
-    var isCodeSendet by remember {
+    var isCodeSend by remember {
         mutableStateOf(false)
     }
 
     var phoneNumber by remember {
-        mutableStateOf("9123456789")
+        mutableStateOf("")
     }
 
     var code by remember {
-        mutableStateOf("000000")
+        mutableStateOf("")
     }
 
 
@@ -156,7 +155,7 @@ fun EnteredComp() {
 
             Button(
                 onClick = {
-                    isCodeSendet = true
+                    isCodeSend = true
                     enterAcc("${selectedOptionText.first}$phoneNumber")
                 },
                 Modifier
@@ -167,7 +166,7 @@ fun EnteredComp() {
             }
         }
 
-        AnimatedVisibility(visible = isCodeSendet) {
+        AnimatedVisibility(visible = isCodeSend) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -183,7 +182,8 @@ fun EnteredComp() {
                     TextField(value = code, onValueChange = { code = it },
                         Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 25.dp, vertical = 35.dp), label = { "Code" })
+                            .padding(horizontal = 25.dp, vertical = 35.dp), label = { "Code" },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone))
                     Button(
                         onClick = {
                             signInWithCode(code)

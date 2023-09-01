@@ -1,11 +1,9 @@
 package ru.test.andernam.view.ui_parts
 
 import android.net.Uri
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -25,14 +23,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import ru.test.andernam.R
-import ru.test.andernam.domain.getAllMesages
-import ru.test.andernam.domain.getAllUsers
 import ru.test.andernam.domain.startMessaging
 import ru.test.andernam.view.components.Routes
 import ru.test.andernam.view.components.navigateTo
@@ -50,6 +42,7 @@ fun BlogComp() {
         Spacer(modifier = Modifier.width(30.dp))
 
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
+//            if(::usersArray.isInitialized)
             usersArray.forEach { elementMassive ->
                 CardElementUser(elementMassive[0], elementMassive[1], Uri.parse(elementMassive[2]))
             }

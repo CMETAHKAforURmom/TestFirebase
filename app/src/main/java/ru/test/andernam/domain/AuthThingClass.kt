@@ -14,6 +14,7 @@ import com.google.firebase.auth.PhoneAuthProvider
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import ru.test.andernam.view.components.Routes
+import ru.test.andernam.view.components.defaultDestination
 import ru.test.andernam.view.components.navigateTo
 import java.util.concurrent.TimeUnit
 
@@ -47,6 +48,15 @@ fun start(contextActivity: Activity) {
     auth = FirebaseAuth.getInstance()
     auth.setLanguageCode("ru")
 
+    if (auth.currentUser != null) {
+        user = auth.currentUser
+        if (user?.phoneNumber != null)
+            setClient(user?.phoneNumber!!)
+        startDownload()
+        defaultDestination = Routes.Main.route
+        Log.i("Auth is avaliable", "True")
+    }
+
     callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
 
         override fun onVerificationCompleted(credential: PhoneAuthCredential) {
@@ -74,18 +84,11 @@ fun start(contextActivity: Activity) {
         }
     }
 
-    if (auth.currentUser != null) {
-        user = auth.currentUser
-        if (user?.phoneNumber != null)
-            setClient(user?.phoneNumber!!)
-        startDownload()
-        navigateTo(Routes.Main)
-    }
 
 }
 
 fun signInWithCode(code: String) {
-    val credential = PhoneAuthProvider.getCredential(storedVerificationId!!, code)
+    val credential = PhoneAuthProvider.getCredential(storedVerificationId, code)
     signInWithPhoneAuthCredential(credential)
 }
 

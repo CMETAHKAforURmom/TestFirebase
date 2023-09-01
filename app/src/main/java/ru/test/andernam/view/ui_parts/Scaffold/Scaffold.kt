@@ -4,12 +4,13 @@ import android.annotation.SuppressLint
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -18,9 +19,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import ru.test.andernam.R
+import ru.test.andernam.ui.theme.Purple40
 import ru.test.andernam.view.components.Navigation
 import ru.test.andernam.view.components.Routes
 import ru.test.andernam.view.components.navigateTo
@@ -45,10 +45,14 @@ fun mainScaffold() {
     isShow = isShowHelper.value
     isMessage = isMessageShowHelper.value
 
-    var defaultMapForBottomNavigation = mapOf("Users" to { navigateTo(Routes.Blog) }, "Profile" to {navigateTo(Routes.Main)})
-    Scaffold(topBar = { AnimatedVisibility(visible = isMessage) {
+    val defaultMapForBottomNavigation = mapOf("Users" to { navigateTo(Routes.Blog) }, "Profile" to {navigateTo(Routes.Main)})
+    Scaffold(
+        topBar = { AnimatedVisibility(visible = isMessage) {
         TopAppBar(title = {TopMessageScaffold()})
     }},
+        content = { Box(modifier = Modifier.fillMaxSize().padding(top = if (isMessage) 46.dp else 0.dp, bottom = 60.dp)){
+            Navigation()
+        } },
         bottomBar = {
         AnimatedVisibility(visible = isShow) {
             BottomAppBar(content = {
@@ -58,9 +62,5 @@ fun mainScaffold() {
                     BottomBarNavigation(defaultMapForBottomNavigation)
             })
         }
-    }) {
-        Box(modifier = Modifier.padding(vertical = 30.dp), contentAlignment = Alignment.Center) {
-            Navigation()
-        }
-    }
+    })
 }

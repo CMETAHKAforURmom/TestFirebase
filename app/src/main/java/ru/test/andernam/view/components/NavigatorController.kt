@@ -8,5 +8,8 @@ fun setDefController(navControllerLocal: NavController){
 }
 
 fun navigateTo(route: Routes){
-    navController?.navigate(route.route)
+    if(route == Routes.Back)
+        navController?.navigateUp()
+    else
+        navController?.navigate(route.route)
 }

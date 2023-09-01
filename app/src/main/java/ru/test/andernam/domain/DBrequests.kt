@@ -1,10 +1,10 @@
 package ru.test.andernam.domain
 
 import android.net.Uri
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
 import com.google.android.gms.tasks.Task
@@ -17,44 +17,36 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.ktx.storage
 import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.runBlocking
 import ru.test.andernam.view.ui_parts.setMessagePathAndUsers
 import ru.test.andernam.view.ui_parts.setPair
 import ru.test.andernam.view.ui_parts.setUsers
 import java.text.SimpleDateFormat
-import java.time.LocalDateTime
 import java.util.Date
 import java.util.UUID
-import kotlin.coroutines.coroutineContext
 
 lateinit var database: FirebaseFirestore
 lateinit var storage: FirebaseStorage
 lateinit var messageLink: DocumentReference
 lateinit var userListSnapshot: Task<QuerySnapshot>
-var yourOpponentNow = " "
-var yourOpponentImage = Uri.EMPTY
-var allMessages: SnapshotStateList<Message> = mutableStateListOf(Message("You", "Some Message"))
-var allMessagesPost: SnapshotStateList<Message> = mutableStateListOf(Message("You", "Some Message"))
-var allMessageForPost: SnapshotStateList<Message> = mutableStateListOf(Message("You", "Some Message"))
-var available = mutableStateOf(false)
-var newMessage = mutableStateOf(false)
+var allMessages: SnapshotStateList<Message> = mutableStateListOf()
+var allMessagesPost: SnapshotStateList<Message> = mutableStateListOf()
+var allMessageForPost: SnapshotStateList<Message> = mutableStateListOf()
 var docExist = false
 lateinit var clientDialogsList: String
 lateinit var dbState: Task<DocumentSnapshot>
 private var idClient: String? = null
 
 fun setClient(number: String) {
-    idClient = number!!
+    idClient = number
 }
 
 fun uploadInfo(localFileY: Uri, info: String) = runBlocking {
     async {
         if (idClient != null) {
-            var newName = UUID.randomUUID().toString()
-            var imageCloudReference = storage.getReference().child("$idClient/$newName")
-            var uploadTask = imageCloudReference.putFile(localFileY).addOnSuccessListener {
+            val newName = UUID.randomUUID().toString()
+            val imageCloudReference = storage.reference.child("$idClient/$newName")
+            imageCloudReference.putFile(localFileY).addOnSuccessListener {
                 imageCloudReference.downloadUrl.addOnSuccessListener { result ->
                     database.collection("usersData").document(idClient!!)
                         .update("profilePhoto", result)
@@ -71,7 +63,8 @@ fun startDownload() = runBlocking {
     async {
         database = Firebase.firestore
         storage = Firebase.storage
-        var userData: Pair<Uri?, String?> = Pair(null, null)
+
+        var userData: Pair<Uri?, String?>
 
         val mapIfDocNotExist: Map<String, String> =
             mapOf("clientData" to " ", "profilePhoto" to " ", "dialogs" to "")
@@ -80,9 +73,9 @@ fun startDownload() = runBlocking {
 
         var profilePhotoUri = Uri.EMPTY
 
-        var profilePhotoPath: String? = null
+        var profilePhotoPath: String?
 
-        var name = "Some Name"
+        var name: String
 
         if (idClient != null) {
 
@@ -121,17 +114,17 @@ fun startDownload() = runBlocking {
 }
 
 fun getAllUsers() {
-    var usersDataArray = mutableListOf<Array<String>>()
+    val usersDataArray = mutableListOf<Array<String>>()
     var indexHelp = 0
     userListSnapshot = database.collection("usersData").get().addOnSuccessListener { result ->
         result.forEach { document ->
 
-            var localUsers = arrayOf(
+            val localUsers = arrayOf(
                 document.id,
-                document.data!!["clientData"].toString(),
-                document.data!!["profilePhoto"].toString()
+                document.data["clientData"].toString(),
+                document.data["profilePhoto"].toString()
             )
-            if (document.data!!["clientData"] != null)
+            if (document.data["clientData"] != null)
                 usersDataArray.add(localUsers)
             indexHelp++
         }
@@ -145,9 +138,9 @@ fun startMessaging(userId: String) {
     var messagePath = ""
 
     if (clientDialogsList.contains(userId)) {
-        var listExist = clientDialogsList.split(",")
+        val listExist = clientDialogsList.split(",")
         var userIdRandom = listExist.filter { it.contains(userId) }
-        var currentString = userIdRandom[0]
+        val currentString = userIdRandom[0]
         userIdRandom = currentString.split("|")
         messagePath = userIdRandom[1]
     } else {
@@ -159,7 +152,7 @@ fun startMessaging(userId: String) {
                 clientDialogsList += ",$userId|$messagePath"
                 database.collection("usersData").document(idClient!!)
                     .update("dialogs", clientDialogsList)
-                var opponentDialogList = ",$idClient|$messagePath"
+                val opponentDialogList = ",$idClient|$messagePath"
                 database.collection("usersData").document(userId)
                     .update("dialogs", opponentDialogList)
             }
@@ -169,7 +162,7 @@ fun startMessaging(userId: String) {
 }
 
 fun sendMessage(message: String) = runBlocking {
-    val sdf = SimpleDateFormat("dd,M,yyyy hh:mm:ss")
+    val sdf = SimpleDateFormat("yyyy,M,dd hh:mm:ss")
     val currentDate = sdf.format(Date())
     if (messageLink != null)
         messageLink.update("$currentDate|$idClient", message)
@@ -177,16 +170,18 @@ fun sendMessage(message: String) = runBlocking {
         Log.i("MessageLinkEmpty", "RealEmpty")
 }
 
-fun getAllMesages() = runBlocking {
+@RequiresApi(Build.VERSION_CODES.O)
+fun getAllMessages() = runBlocking {
     setMessagePathAndUsers(allMessageForPost, idClient!!)
     var messageHelperMap: MutableMap<String?, Any?> = mutableMapOf()
 
     messageLink.addSnapshotListener { snapshot, error ->
         messageHelperMap = snapshot!!.data!!
-        messageHelperMap.forEach { it ->
-            var anyString = it.key?.split("|")
-            allMessages.add(Message(anyString!![1], it.value.toString()))
+        messageHelperMap.forEach {
+            val anyString = it.key?.split("|")
+            allMessages.add(Message(anyString!![0], anyString!![1], it.value.toString()))
         }
+        allMessages.sortBy { SimpleDateFormat("yyyy,M,dd hh:mm:ss").parse(it.date) }
         allMessages = allMessages.minus(allMessagesPost).toMutableStateList()
         allMessagesPost = allMessagesPost.plus(allMessages).toMutableStateList()
         allMessageForPost += allMessages

@@ -5,15 +5,14 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -31,9 +30,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import ru.test.andernam.domain.Message
-import ru.test.andernam.domain.allMessages
 import ru.test.andernam.domain.sendMessage
+import ru.test.andernam.view.components.Routes
+import ru.test.andernam.view.components.navigateTo
 
 var opponentImage = mutableStateOf(Uri.EMPTY)
 var opponentName = mutableStateOf("")
@@ -45,12 +44,17 @@ fun setOpponentData(opponentImageGet: MutableState<Uri>, opponentNameGet: Mutabl
 
 @Composable
 fun TopMessageScaffold() {
-    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+    Row(modifier = Modifier
+        .fillMaxWidth()
+        .size(64.dp), verticalAlignment = Alignment.CenterVertically) {
+        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back", modifier = Modifier.clickable {
+            navigateTo(Routes.Back)
+        })
         AsyncImage(
             model = opponentImage.value, contentDescription = "Image profile",
             modifier = Modifier
                 .padding(15.dp)
-                .size(64.dp)
+                .size(54.dp)
                 .clip(CircleShape)
         )
         Text(text = opponentName.value)
