@@ -24,7 +24,7 @@ private lateinit var callbacks: PhoneAuthProvider.OnVerificationStateChangedCall
 private lateinit var auth: FirebaseAuth
 private var user: FirebaseUser? = null
 private lateinit var activity: Activity
-
+private lateinit var RequestClass: DataBaseRequestImpl
 
 fun signOut() {
     auth.signOut()
@@ -45,6 +45,7 @@ fun enterAcc(phone: String) = runBlocking {
 }
 
 fun start(contextActivity: Activity) {
+    RequestClass = DataBaseRequestImpl()
     activity = contextActivity
     auth = FirebaseAuth.getInstance()
     auth.setLanguageCode("ru")
@@ -52,8 +53,8 @@ fun start(contextActivity: Activity) {
     if (auth.currentUser != null) {
         user = auth.currentUser
         if (user?.phoneNumber != null)
-            setClient(user?.phoneNumber!!)
-        startDownload()
+            RequestClass.setClient(user?.phoneNumber!!)
+        RequestClass.downloadUserProfile()
         defaultDestination = Routes.Main.route
         Log.i("Auth is avaliable", "True")
     }
@@ -104,8 +105,8 @@ fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) = runBlocking
                     user = task.result?.user
                     if (user != null)
                         if (user?.phoneNumber != null)
-                            setClient(user?.phoneNumber!!)
-                    startDownload()
+                            RequestClass.setClient(user?.phoneNumber!!)
+                    RequestClass.downloadUserProfile()
                 } else {
                     // Sign in failed, display a message and update the UI
                     Log.w(ContentValues.TAG, "signInWithCredential:failure", task.exception)

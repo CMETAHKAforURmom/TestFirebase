@@ -50,7 +50,7 @@ fun setOpponentData(imageUri: Uri, opponentName: String){
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun SendMessageScreen() {
-    getAllMessages()
+//    getAllMessages() // Call "downloadPrewMessages" from DownloadUploadHelp and get snapshotState
     setOpponentData(opponentUserImage, opponentUserName)
     Box(modifier = Modifier
         .fillMaxSize()

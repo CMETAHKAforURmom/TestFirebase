@@ -31,7 +31,7 @@ import ru.test.andernam.view.components.navigateTo
 
 lateinit var usersArray: MutableList<Array<String>>
 
-fun setUsers(users: MutableList<Array<String>>){
+fun setUsers(users: MutableList<Array<String>>){  //Use Dagger!
     usersArray = users
 }
 

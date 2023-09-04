@@ -28,8 +28,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import ru.test.andernam.domain.databaseRequest
 import ru.test.andernam.domain.signOut
-import ru.test.andernam.domain.uploadInfo
 
 
 private var localPair: MutableState<Pair<Uri?, String?>> = mutableStateOf( Pair(Uri.EMPTY, null))
