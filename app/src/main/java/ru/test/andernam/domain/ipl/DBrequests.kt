@@ -19,9 +19,9 @@ interface DatabaseRequests {
     var dbState: Task<DocumentSnapshot>
 
     fun uploadInfo(localFileY: Uri, info: String, userId: String)
-    fun downloadUserProfile(userId: String)
-    fun getAllUsers()
-    fun startMessaging(opponentId: String, userId: String): Any
+    fun downloadUserProfile(idClient: String)
+    fun getAllUsers(idClient: String)
+    fun startMessaging(opponentId: String, userId: String): Pair<DocumentReference, SnapshotStateList<Message>>?
     fun sendMessage(message: String, dialogId: DocumentReference, userId: String)
-    fun getAllMessages(userId: String, dialogId: DocumentReference)
+//    fun getAllMessages(userId: String, dialogId: DocumentReference)
 }

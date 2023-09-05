@@ -1,9 +1,8 @@
 package ru.test.andernam.domain
 
+import android.annotation.SuppressLint
 import android.net.Uri
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
@@ -11,7 +10,6 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
@@ -35,21 +33,20 @@ class DataBaseRequestImpl: DatabaseRequests {
     override lateinit var clientDialogsList: String
     override lateinit var dbState: Task<DocumentSnapshot>
 
-    override fun uploadInfo(localFileY: Uri, info: String, idClient: String): Unit = runBlocking { //Use Dagger!
+    override fun uploadInfo(localFileY: Uri, info: String, userId: String): Unit = runBlocking { //Use Dagger!
         async {
-            if (idClient != null) {
                 val newName = UUID.randomUUID().toString()
-                val imageCloudReference = storage.reference.child("$idClient/$newName")
+                val imageCloudReference = storage.reference.child("$userId/$newName")
                 imageCloudReference.putFile(localFileY).addOnSuccessListener {
                     imageCloudReference.downloadUrl.addOnSuccessListener { result ->
-                        database.collection("usersData").document(idClient!!)
+                        database.collection("usersData").document(userId)
                             .update("profilePhoto", result)
                     }
                 }
-                    .addOnFailureListener { exception ->
+                    .addOnFailureListener { _ ->
                     }
-                database.collection("usersData").document(idClient!!).update("clientData", info)
-            }
+                database.collection("usersData").document(userId).update("clientData", info)
+
         }
     }
 
@@ -71,15 +68,14 @@ class DataBaseRequestImpl: DatabaseRequests {
 
             var name: String
 
-            if (idClient != null) {
 
-                dbState = database.collection("usersData").document(idClient!!).get()
+                dbState = database.collection("usersData").document(idClient).get()
                     .addOnSuccessListener { document ->
                         if (document.exists()) {
                             allDataAboutMap = document.data!!
                             docExist = true
                         } else {
-                            database.collection("usersData").document(idClient!!)
+                            database.collection("usersData").document(idClient)
                                 .set(mapIfDocNotExist)
                                 .addOnSuccessListener {
                                     Log.i("Creating new doc", "Success!")
@@ -101,35 +97,38 @@ class DataBaseRequestImpl: DatabaseRequests {
                         userData = Pair(profilePhotoUri, name)
                         setPair(userData)
                     }
-            }
-            getAllUsers()
+
+            getAllUsers(idClient)
         }
 
     }
 
-    override fun getAllUsers() {
+    override fun getAllUsers(idClient: String) {
         val usersDataArray = mutableListOf<Array<String>>()
         var indexHelp = 0
         database.collection("usersData").get().addOnSuccessListener { result ->
             result.forEach { document ->
+                if (document.data["clientData"].toString() != idClient) {
+                    val localUsers = arrayOf(
+                        document.id,
+                        document.data["clientData"].toString(),
+                        document.data["profilePhoto"].toString()
+                    )
 
-                val localUsers = arrayOf(
-                    document.id,
-                    document.data["clientData"].toString(),
-                    document.data["profilePhoto"].toString()
-                )
-                if (document.data["clientData"] != null)
-                    usersDataArray.add(localUsers)
-                indexHelp++
+                    if (document.data["clientData"] != null)
+                        usersDataArray.add(localUsers)
+                    indexHelp++
+                }
             }
         }.addOnCompleteListener {
             setUsers(usersDataArray)
         }
     }
 
-    override fun startMessaging(opponentId: String, idClient: String): Pair<DocumentReference, SnapshotStateList<Message>> {
+    @SuppressLint("SimpleDateFormat")
+    override fun startMessaging(opponentId: String, userId: String): Pair<DocumentReference, SnapshotStateList<Message>> {
 
-        var messagePath = ""
+        val messagePath: String
 
         if (clientDialogsList.contains(opponentId)) {
             val listExist = clientDialogsList.split(",")
@@ -144,44 +143,45 @@ class DataBaseRequestImpl: DatabaseRequests {
             database.collection("dialogs").document(messagePath)
                 .set(mapIfDocNotExist).addOnCompleteListener {
                     clientDialogsList += ",$opponentId|$messagePath"
-                    database.collection("usersData").document(idClient!!)
+                    database.collection("usersData").document(userId)
                         .update("dialogs", clientDialogsList)
-                    val opponentDialogList = ",$idClient|$messagePath"
+                    val opponentDialogList = ",$userId|$messagePath"
                     database.collection("usersData").document(opponentId)
                         .update("dialogs", opponentDialogList)
                 }
         }
-        return database.collection("dialogs").document(messagePath)
 
-    }
+        val allMessageForPost: SnapshotStateList<Message> = mutableStateListOf()
+        var localMessages: SnapshotStateList<Message> = mutableStateListOf()
+        var localHelperMessages: SnapshotStateList<Message> = mutableStateListOf()
+        setMessagePathAndUsers(allMessageForPost, userId)
+        var messageHelperMap: MutableMap<String?, Any?>
 
-    override fun sendMessage(message: String, dialogId: DocumentReference, idClient: String): Unit = runBlocking {
-        val sdf = SimpleDateFormat("yyyy,M,dd hh:mm:ss")
-        val currentDate = sdf.format(Date())
-        if (dialogId != null)
-            dialogId.update("$currentDate|$idClient", message)
-        else
-            Log.i("MessageLinkEmpty", "RealEmpty")
-    }
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    override fun getAllMessages(idClient: String, dialogId: DocumentReference): Unit = runBlocking {
-        var allMessageForPost: SnapshotStateList<Message> = mutableStateListOf()
-        setMessagePathAndUsers(allMessageForPost, idClient!!)
-        var messageHelperMap: MutableMap<String?, Any?> = mutableMapOf()
-
-        dialogId.addSnapshotListener { snapshot, error ->
+        database.collection("dialogs").document(messagePath).addSnapshotListener { snapshot, _ ->
             messageHelperMap = snapshot!!.data!!
             messageHelperMap.forEach {
                 val anyString = it.key?.split("|")
-                allMessages.add(Message(anyString!![0], anyString!![1], it.value.toString()))
+                localMessages.add(Message(anyString!![0], anyString[1], it.value.toString()))
             }
-            allMessages.sortBy { SimpleDateFormat("yyyy,M,dd hh:mm:ss").parse(it.date) }
-            allMessages = allMessages.minus(allMessagesPost).toMutableStateList()
-            allMessagesPost = allMessagesPost.plus(allMessages).toMutableStateList()
-            allMessageForPost += allMessages
+            localMessages.sortBy { SimpleDateFormat("yyyy,M,dd hh:mm:ss").parse(it.date) }
+            localMessages = localMessages.minus(localHelperMessages).toMutableStateList()
+            localHelperMessages = localHelperMessages.plus(localMessages).toMutableStateList()
+            allMessageForPost += localMessages
         }
 
+        return Pair(database.collection("dialogs").document(messagePath), allMessageForPost)
+
     }
+
+    @SuppressLint("SimpleDateFormat")
+    override fun sendMessage(message: String, dialogId: DocumentReference, userId: String): Unit = runBlocking {
+        val sdf = SimpleDateFormat("yyyy,M,dd hh:mm:ss")
+        val currentDate = sdf.format(Date())
+            dialogId.update("$currentDate|$userId", message)
+    }
+
+//    @RequiresApi(Build.VERSION_CODES.O)
+//    override fun getAllMessages(idClient: String, dialogId: DocumentReference): Unit = runBlocking {
+//    }
 
 }

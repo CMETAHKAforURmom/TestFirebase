@@ -28,8 +28,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import ru.test.andernam.domain.databaseRequest
 import ru.test.andernam.domain.signOut
+import ru.test.andernam.view.userClass
 
 
 private var localPair: MutableState<Pair<Uri?, String?>> = mutableStateOf( Pair(Uri.EMPTY, null))
@@ -37,8 +37,6 @@ private var localPair: MutableState<Pair<Uri?, String?>> = mutableStateOf( Pair(
 fun setPair(userDataPair : Pair<Uri?, String?>){
     localPair.value = userDataPair
 }
-
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -117,7 +115,7 @@ fun MainComp() {
             Button(
                 onClick = {
                     if(uriForUpload != null)
-                          uploadInfo(uriForUpload, localName)
+                          userClass.uploadUserInfo(uriForUpload, localName)
                 },
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)

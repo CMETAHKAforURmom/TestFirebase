@@ -20,17 +20,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ru.test.andernam.domain.Message
-import ru.test.andernam.domain.getAllMessages
 import ru.test.andernam.ui.theme.Pink80
 import ru.test.andernam.ui.theme.Purple80
 import ru.test.andernam.ui.theme.PurpleGrey80
 import ru.test.andernam.view.ui_parts.Scaffold.setOpponentData
-import java.text.SimpleDateFormat
-import java.time.LocalDateTime
 
 var messageGettingList: SnapshotStateList<Message> = mutableStateListOf()
 var thisUser = ""
@@ -58,7 +54,7 @@ fun SendMessageScreen() {
     LazyColumn(modifier = Modifier.padding(15.dp)) {
         items(messageGettingList.size, itemContent = {
             val localDateTime = messageGettingList[it].date.split(" ")[1].split(":")
-            message(
+            Message(
                 messageText = messageGettingList[it].messageText,
                 messageDate = localDateTime[0]+ ":" + localDateTime[1],
                 Modifier.padding(5.dp),
@@ -70,7 +66,7 @@ fun SendMessageScreen() {
 }
 
 @Composable
-fun message(messageText: String, messageDate: String, modifier: Modifier = Modifier, flagAddress: Boolean) {
+fun Message(messageText: String, messageDate: String, modifier: Modifier = Modifier, flagAddress: Boolean) {
     Box(modifier = modifier.fillMaxSize()) {
         Box(
             modifier = Modifier

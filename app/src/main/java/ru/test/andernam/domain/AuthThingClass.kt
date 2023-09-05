@@ -24,7 +24,8 @@ private lateinit var callbacks: PhoneAuthProvider.OnVerificationStateChangedCall
 private lateinit var auth: FirebaseAuth
 private var user: FirebaseUser? = null
 private lateinit var activity: Activity
-private lateinit var RequestClass: DataBaseRequestImpl
+private lateinit var UserDataClass: IDownloadUploadHelp
+
 
 fun signOut() {
     auth.signOut()
@@ -44,17 +45,18 @@ fun enterAcc(phone: String) = runBlocking {
     }
 }
 
-fun start(contextActivity: Activity) {
-    RequestClass = DataBaseRequestImpl()
+fun start(contextActivity: Activity): IDownloadUploadHelp {
+
     activity = contextActivity
     auth = FirebaseAuth.getInstance()
     auth.setLanguageCode("ru")
-
+    UserDataClass = IDownloadUploadHelp()
     if (auth.currentUser != null) {
         user = auth.currentUser
-        if (user?.phoneNumber != null)
-            RequestClass.setClient(user?.phoneNumber!!)
-        RequestClass.downloadUserProfile()
+        if (user?.phoneNumber != null) {
+            UserDataClass.createDBrequestClass()
+            UserDataClass.rememberThisUser(user?.phoneNumber!!)
+        }
         defaultDestination = Routes.Main.route
         Log.i("Auth is avaliable", "True")
     }
@@ -71,9 +73,6 @@ fun start(contextActivity: Activity) {
             if (e is FirebaseAuthInvalidCredentialsException) {
             } else if (e is FirebaseTooManyRequestsException) {
             }
-//            else if (e is FirebaseAuthMissingActivityForRecaptchaException) {
-//                // reCAPTCHA verification attempted with null Activity
-//            }
         }
 
         override fun onCodeSent(
@@ -85,7 +84,7 @@ fun start(contextActivity: Activity) {
             resendToken = token
         }
     }
-
+    return UserDataClass
 
 }
 
@@ -105,8 +104,7 @@ fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) = runBlocking
                     user = task.result?.user
                     if (user != null)
                         if (user?.phoneNumber != null)
-                            RequestClass.setClient(user?.phoneNumber!!)
-                    RequestClass.downloadUserProfile()
+                            UserDataClass.rememberThisUser(user?.phoneNumber!!)
                 } else {
                     // Sign in failed, display a message and update the UI
                     Log.w(ContentValues.TAG, "signInWithCredential:failure", task.exception)

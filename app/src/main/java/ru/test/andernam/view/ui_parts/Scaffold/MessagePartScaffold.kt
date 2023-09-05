@@ -30,9 +30,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import ru.test.andernam.domain.sendMessage
 import ru.test.andernam.view.components.Routes
 import ru.test.andernam.view.components.navigateTo
+import ru.test.andernam.view.userClass
 
 var opponentImage = mutableStateOf(Uri.EMPTY)
 var opponentName = mutableStateOf("")
@@ -77,7 +77,7 @@ fun BottomMessageScaffold() {
             .border(1.dp, Color.DarkGray, RoundedCornerShape(35f)))
         Icon(imageVector = Icons.Default.Send, contentDescription = "Send action", modifier = Modifier
             .clickable {
-                sendMessage(message)
+                userClass.sendMessage(message)
                 message = ""
             }
             .size(42.dp))

@@ -25,9 +25,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import ru.test.andernam.domain.startMessaging
 import ru.test.andernam.view.components.Routes
 import ru.test.andernam.view.components.navigateTo
+import ru.test.andernam.view.userClass
 
 lateinit var usersArray: MutableList<Array<String>>
 
@@ -42,7 +42,6 @@ fun BlogComp() {
         Spacer(modifier = Modifier.width(30.dp))
 
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-//            if(::usersArray.isInitialized)
             usersArray.forEach { elementMassive ->
                 CardElementUser(elementMassive[0], elementMassive[1], Uri.parse(elementMassive[2]))
             }
@@ -74,7 +73,7 @@ fun CardElementUser(profileLinkL: String, name: String, profileImg: Uri) {
             Text(text = name, modifier = Modifier.padding(15.dp))
             Icon(Icons.Default.Send, contentDescription = "Send", modifier = Modifier.clickable {
                 navigateTo(Routes.Message)
-                startMessaging(profileLinkL)
+                userClass.startMessagingWith(profileLinkL)
                 setOpponentData(profileImg, name)
             })
         }
