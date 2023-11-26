@@ -7,8 +7,8 @@ import ru.test.andernam.domain.ipl.DownloadUploadHelp
 
 class IDownloadUploadHelp : DownloadUploadHelp {
 
-    override var DBRequest: DatabaseRequests? = null
 
+    override var DBRequest: DatabaseRequests? = null
     override var idClient: String? = null
     override var currentDialog: DocumentReference? = null
     override var dialogList: SnapshotStateList<Message>? = null

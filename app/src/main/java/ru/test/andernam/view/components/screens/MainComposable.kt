@@ -1,4 +1,4 @@
-package ru.test.andernam.view.ui_parts
+package ru.test.andernam.view.components.screens
 
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -28,7 +28,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import ru.test.andernam.domain.signOut
+//import ru.test.andernam.domain.signOut
 import ru.test.andernam.view.userClass
 
 
@@ -128,7 +128,7 @@ fun MainComp() {
                     .align(Alignment.CenterHorizontally)
                     .fillMaxWidth(0.5f),
                 onClick = {
-                    signOut()
+//                    signOut()
                     isPairUpdated = true
                 }
             ){

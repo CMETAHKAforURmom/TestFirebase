@@ -14,16 +14,20 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.ktx.storage
+import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import ru.test.andernam.domain.ipl.DatabaseRequests
-import ru.test.andernam.view.ui_parts.setMessagePathAndUsers
-import ru.test.andernam.view.ui_parts.setPair
-import ru.test.andernam.view.ui_parts.setUsers
+import ru.test.andernam.view.components.screens.setMessagePathAndUsers
+import ru.test.andernam.view.components.screens.setPair
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.UUID
 
+@Module
+@InstallIn(SingletonComponent::class)
 class DataBaseRequestImpl: DatabaseRequests {
 
     override lateinit var database: FirebaseFirestore
@@ -103,27 +107,28 @@ class DataBaseRequestImpl: DatabaseRequests {
 
     }
 
-    override fun getAllUsers(idClient: String) {
+    @SuppressLint("SuspiciousIndentation")
+    override fun getAllUsers(idClient: String){
         val usersDataArray = mutableListOf<Array<String>>()
         var indexHelp = 0
-        database.collection("usersData").get().addOnSuccessListener { result ->
-            result.forEach { document ->
-                if (document.data["clientData"].toString() != idClient) {
-                    val localUsers = arrayOf(
-                        document.id,
-                        document.data["clientData"].toString(),
-                        document.data["profilePhoto"].toString()
-                    )
+                val databaseTask = database.collection("usersData").get().addOnSuccessListener { result ->
+                    result.forEach { document ->
+                        if (document.data["clientData"].toString() != idClient) {
+                            val localUsers = arrayOf(
+                                document.id,
+                                document.data["clientData"].toString(),
+                                document.data["profilePhoto"].toString()
+                            )
 
-                    if (document.data["clientData"] != null)
-                        usersDataArray.add(localUsers)
-                    indexHelp++
+                            if (document.data["clientData"] != null)
+                                usersDataArray.add(localUsers)
+                            indexHelp++
+                        }
+                    }
+                }.addOnCompleteListener{
+                    User.dialogList = usersDataArray
                 }
             }
-        }.addOnCompleteListener {
-            setUsers(usersDataArray)
-        }
-    }
 
     @SuppressLint("SimpleDateFormat")
     override fun startMessaging(opponentId: String, userId: String): Pair<DocumentReference, SnapshotStateList<Message>> {
@@ -173,7 +178,7 @@ class DataBaseRequestImpl: DatabaseRequests {
 
     }
 
-    @SuppressLint("SimpleDateFormat")
+    @SuppressLint("SimpleDateFormat", "SuspiciousIndentation")
     override fun sendMessage(message: String, dialogId: DocumentReference, userId: String): Unit = runBlocking {
         val sdf = SimpleDateFormat("yyyy,M,dd hh:mm:ss")
         val currentDate = sdf.format(Date())

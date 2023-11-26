@@ -1,4 +1,4 @@
-package ru.test.andernam.view.ui_parts
+package ru.test.andernam.view.components.screens
 
 import android.net.Uri
 import android.os.Build

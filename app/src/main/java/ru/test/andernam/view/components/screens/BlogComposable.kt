@@ -1,4 +1,4 @@
-package ru.test.andernam.view.ui_parts
+package ru.test.andernam.view.components.screens
 
 import android.net.Uri
 import androidx.compose.foundation.border
@@ -25,24 +25,21 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import ru.test.andernam.domain.User
 import ru.test.andernam.view.components.Routes
 import ru.test.andernam.view.components.navigateTo
 import ru.test.andernam.view.userClass
 
-lateinit var usersArray: MutableList<Array<String>>
-
-fun setUsers(users: MutableList<Array<String>>){  //Use Dagger!
-    usersArray = users
-}
 
 @Composable
 fun BlogComp() {
+
     Row {
 
         Spacer(modifier = Modifier.width(30.dp))
 
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            usersArray.forEach { elementMassive ->
+            User.dialogList?.forEach { elementMassive ->
                 CardElementUser(elementMassive[0], elementMassive[1], Uri.parse(elementMassive[2]))
             }
         }

@@ -38,7 +38,7 @@ interface DownloadUploadHelp {
     }
 
     fun downloadUsersForMessage(userId: String){
-        DBRequest?.getAllUsers(userId)
+//        DBRequest.getAllUsers(userId)
     }
 
     fun startMessagingWith(opponentId: String){

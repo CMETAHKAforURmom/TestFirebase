@@ -68,8 +68,7 @@ fun BottomMessageScaffold() {
     var message by remember{
         mutableStateOf("")
     }
-
-    Row(modifier = Modifier
+Row(modifier = Modifier
         .height(135.dp)
         .fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
         OutlinedTextField(value = message, onValueChange = {message = it}, modifier = Modifier
