@@ -28,7 +28,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,8 +40,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import ru.test.andernam.R
+import javax.inject.Inject
 
-class EnteredComposable constructor(private val enteredViewModel: EnteredViewModel) {
+class EnteredComposable @Inject constructor(private val commonViewModel: CommonViewModel) {
 
 
 
@@ -50,7 +50,7 @@ class EnteredComposable constructor(private val enteredViewModel: EnteredViewMod
     @Composable
     fun EnteredComp() {
 
-        val enteredUiState by enteredViewModel.uiState.collectAsState()
+//        val enteredUiState by enteredViewModel.uiState.collectAsState()
 
         var expandedPhoneSelect by remember {
             mutableStateOf(false)
@@ -167,7 +167,7 @@ class EnteredComposable constructor(private val enteredViewModel: EnteredViewMod
                 Button(
                     onClick = {
                         isCodeSend = true
-                        enteredViewModel.tryEnter("${selectedOptionText.first}$phoneNumber")
+                        commonViewModel.sendCode("${selectedOptionText.first}$phoneNumber")
 //                    authClass.enterAcc("${selectedOptionText.first}$phoneNumber")
                     },
                     Modifier
@@ -200,7 +200,7 @@ class EnteredComposable constructor(private val enteredViewModel: EnteredViewMod
                         )
                         Button(
                             onClick = {
-//                                authClass.signInWithCode(code)
+                                      commonViewModel.returnCode(code)
                             },
                             Modifier
                                 .fillMaxWidth()

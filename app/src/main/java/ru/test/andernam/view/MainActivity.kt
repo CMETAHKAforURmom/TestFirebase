@@ -6,7 +6,13 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import ru.test.andernam.domain.AuthThingClass
+import ru.test.andernam.domain.LiveUserData
+import ru.test.andernam.domain.UserClass
 import ru.test.andernam.domain.ipl.DownloadUploadHelp
 import ru.test.andernam.ui.theme.TestFirebaseTheme
 import ru.test.andernam.view.components.Navigator
@@ -18,25 +24,47 @@ lateinit var userClass: DownloadUploadHelp
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
+//    @get:Provides
+//    val context: LifecycleOwner = this
+//    private val stringLive = LiveUserData(userClass)
+//    private val stringObserver = Observer<ProfileInfo>{value ->
+//        getString = value.name!!
+//        println(getString)
+//    }
+//    private val lifecucleObserv = LifecycleObserverCustom()
+//    private var getString = ""
+
     @Inject
     lateinit var navigator : Navigator
 
-    private val lifecucleObserv = LifecycleObserverCustom()
+    @Inject
+    lateinit var userClass: UserClass
+
+    @Inject
+    lateinit var authThingClass: AuthThingClass
+
+    @Inject
+    lateinit var userLiveData: LiveUserData
+
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        lifecycle.addObserver(lifecucleObserv)
-
         setContent {
+            val navController = rememberNavController()
             TestFirebaseTheme {
-//                val viewModel = hiltViewModel<EnteredViewModel>()
-                navigator.Navigation()
+                navigator.Navigation(navController)
+            }
+            lifecycleScope.launchWhenCreated {
+                userLiveData.screen.collectLatest {
+                    navController.navigate(it)
+                }
             }
         }
+
+
         thread {
-//
-//            userClass = start()
+            authThingClass.start(userLiveData)
         }
     }
 }

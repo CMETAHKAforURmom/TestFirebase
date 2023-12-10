@@ -18,29 +18,41 @@ import ru.test.andernam.view.components.Routes
 import ru.test.andernam.view.components.navigateTo
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import javax.inject.Singleton
 
-class AuthThingClass @Inject constructor(var activity: Activity) {
+@Singleton
+class AuthThingClass @Inject constructor(val activity: Activity, val userLiveData: LiveUserData) {
+
+    @Inject
+    lateinit var dbRequestImpl: DataBaseRequestImpl
 
     private lateinit var resendToken: PhoneAuthProvider.ForceResendingToken
     private lateinit var storedVerificationId: String
     private lateinit var callbacks: PhoneAuthProvider.OnVerificationStateChangedCallbacks
     private lateinit var auth: FirebaseAuth
     private var user: FirebaseUser? = null
-    private lateinit var UserDataClass: IDownloadUploadHelp
     private var isCodeSend = false
 
 //    fun setActivity(_activity: Activity) {
 //        activity = _activity
 //    }
 
+//    fun isUserAuthBefore() : Boolean{
+//        return if(FirebaseAuth.getInstance().currentUser != null){
+//            user = FirebaseAuth.getInstance()?.currentUser
+//            true
+//        }else
+//            false
+//    }
+
     fun signOut() {
         auth.signOut()
         user = null
-        navigateTo(Routes.Enter)
+        userLiveData.changeAuthState(false)
+//        navigateTo(Routes.Enter)
     }
 
-    fun enterAcc(phone: String) = runBlocking {
-        start()
+    fun enterAcc (phone: String) = runBlocking {
         async {
             val options = PhoneAuthOptions.newBuilder(auth)
                 .setPhoneNumber(phone) // Phone number to verify
@@ -52,19 +64,21 @@ class AuthThingClass @Inject constructor(var activity: Activity) {
         }
     }
 
-    fun start(): IDownloadUploadHelp {
-
+    fun start (userLiveData: LiveUserData) {
         auth = FirebaseAuth.getInstance()
+        println("Done")
         auth.setLanguageCode("ru")
-        UserDataClass = IDownloadUploadHelp()
+        userLiveData.auth.postValue(auth)
         if (auth.currentUser != null) {
-            user = auth.currentUser
-            if (user?.phoneNumber != null) {
-                UserDataClass.createDBrequestClass()
-                UserDataClass.rememberThisUser(user?.phoneNumber!!)
+            userLiveData.user.postValue(auth.currentUser)
+            userLiveData.changeAuthState(true)
+            if (auth.currentUser?.phoneNumber != null) {
+                userLiveData.DBRequest.postValue(dbRequestImpl)
+//                UserDataClass.createDBrequestClass()
+                userLiveData.phone.postValue(auth.currentUser?.phoneNumber)
+                dbRequestImpl.downloadUserProfile(auth.currentUser?.phoneNumber.toString())
+//                UserDataClass.rememberThisUser(user?.phoneNumber!!)
             }
-//            defaultDestination = Routes.Main.route
-            Log.i("Auth is avaliable", "True")
         }
 
         callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
@@ -91,7 +105,6 @@ class AuthThingClass @Inject constructor(var activity: Activity) {
                 resendToken = token
             }
         }
-        return UserDataClass
 
     }
 
@@ -111,9 +124,10 @@ class AuthThingClass @Inject constructor(var activity: Activity) {
                         Log.d(ContentValues.TAG, "signInWithCredential:success")
                         navigateTo(Routes.Main)
                         user = task.result?.user
+                        dbRequestImpl.downloadUserProfile(auth.currentUser?.phoneNumber.toString())
                         if (user != null)
                             if (user?.phoneNumber != null)
-                                UserDataClass.rememberThisUser(user?.phoneNumber!!)
+                                userLiveData.phone.postValue(auth.currentUser?.phoneNumber)
                     } else {
                         // Sign in failed, display a message and update the UI
                         when (task.exception) {

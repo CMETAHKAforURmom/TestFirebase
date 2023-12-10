@@ -3,42 +3,50 @@ package ru.test.andernam.view.components
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import ru.test.andernam.view.components.screens.BlogComp
-import ru.test.andernam.view.components.screens.MainComp
+import ru.test.andernam.view.components.screens.Main.MainComposable
 import ru.test.andernam.view.components.screens.SendMessageScreen
 import ru.test.andernam.view.components.screens.entered.EnteredComposable
-import ru.test.andernam.view.components.screens.entered.EnteredViewModel
 import ru.test.andernam.view.ui_parts.Scaffold.isMessageShowHelper
 import ru.test.andernam.view.ui_parts.Scaffold.isShowHelper
 import javax.inject.Inject
+import javax.inject.Singleton
 
 
-class Navigator @Inject constructor(private val enteredViewModel: EnteredViewModel) {
+@Singleton
+class Navigator @Inject constructor() {
+
+    @Inject
+    lateinit var enteredComposable: EnteredComposable
+
+//    @Inject
+//    lateinit var blogComposable: BlogComposable
+
+    @Inject
+    lateinit var mainComposable: MainComposable
 
     var isNavigatorAsked = false
-    var defaultDestination = Routes.Enter.route
+    var defaultDestination = Routes.Main.route
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     @Composable
-    fun Navigation() {
-        val navController = rememberNavController()
+    fun Navigation(navController: NavHostController) {
         isNavigatorAsked = true
         setDefController(navController)
         NavHost(navController = navController, startDestination = defaultDestination) {
             composable(Routes.Enter.route) {
-                EnteredComposable(enteredViewModel).EnteredComp()
+                enteredComposable.EnteredComp()
                 isShowHelper.value = false
             }
             composable(Routes.Main.route) {
-                MainComp()
+                mainComposable.MainComp()
                 isShowHelper.value = true
                 isMessageShowHelper.value = false
             }
             composable(Routes.Blog.route) {
-                BlogComp()
+//                blogComposable.BlogComp()
                 isShowHelper.value = true
                 isMessageShowHelper.value = false
             }

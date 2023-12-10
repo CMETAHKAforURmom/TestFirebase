@@ -14,6 +14,6 @@ class IDownloadUploadHelp : DownloadUploadHelp {
     override var dialogList: SnapshotStateList<Message>? = null
 
     override fun createDBrequestClass() {
-        DBRequest = DataBaseRequestImpl()
+//        DBRequest = DataBaseRequestImpl()
     }
 }

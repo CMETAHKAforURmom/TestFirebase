@@ -9,7 +9,6 @@ import dagger.hilt.components.SingletonComponent
 object User {
 
     lateinit var idClient: String
-
     var dialogList: MutableList<Array<String>>? = null
 
 }

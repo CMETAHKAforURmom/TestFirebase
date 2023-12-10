@@ -29,50 +29,62 @@ import ru.test.andernam.domain.User
 import ru.test.andernam.view.components.Routes
 import ru.test.andernam.view.components.navigateTo
 import ru.test.andernam.view.userClass
+import javax.inject.Inject
+import javax.inject.Singleton
 
 
-@Composable
-fun BlogComp() {
+@Singleton
+class BlogComposable () {
+    @Composable
+    fun BlogComp() {
 
-    Row {
+        Row {
 
-        Spacer(modifier = Modifier.width(30.dp))
+            Spacer(modifier = Modifier.width(30.dp))
 
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            User.dialogList?.forEach { elementMassive ->
-                CardElementUser(elementMassive[0], elementMassive[1], Uri.parse(elementMassive[2]))
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                User.dialogList?.forEach { elementMassive ->
+                    CardElementUser(
+                        elementMassive[0],
+                        elementMassive[1],
+                        Uri.parse(elementMassive[2])
+                    )
+                }
             }
         }
     }
-}
 
 
-@Composable
-fun CardElementUser(profileLinkL: String, name: String, profileImg: Uri) {
+    @Composable
+    fun CardElementUser(profileLinkL: String, name: String, profileImg: Uri) {
 
-    Spacer(modifier = Modifier.height(15.dp))
-    Row(
-        modifier = Modifier
-            .fillMaxWidth(0.9f)
-            .border(1.dp, Color.DarkGray, RoundedCornerShape(35f)),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        AsyncImage(
-            model = profileImg, contentDescription = "Image profile",
+        Spacer(modifier = Modifier.height(15.dp))
+        Row(
             modifier = Modifier
-                .padding(15.dp)
-                .size(64.dp)
-                .clip(CircleShape)
-        )
+                .fillMaxWidth(0.9f)
+                .border(1.dp, Color.DarkGray, RoundedCornerShape(35f)),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            AsyncImage(
+                model = profileImg, contentDescription = "Image profile",
+                modifier = Modifier
+                    .padding(15.dp)
+                    .size(64.dp)
+                    .clip(CircleShape)
+            )
 
-        Row(modifier = Modifier.padding(15.dp)) {
-            Text(text = name, modifier = Modifier.padding(15.dp))
-            Icon(Icons.Default.Send, contentDescription = "Send", modifier = Modifier.clickable {
-                navigateTo(Routes.Message)
-                userClass.startMessagingWith(profileLinkL)
-                setOpponentData(profileImg, name)
-            })
+            Row(modifier = Modifier.padding(15.dp)) {
+                Text(text = name, modifier = Modifier.padding(15.dp))
+                Icon(
+                    Icons.Default.Send,
+                    contentDescription = "Send",
+                    modifier = Modifier.clickable {
+                        navigateTo(Routes.Message)
+                        userClass.startMessagingWith(profileLinkL)
+                        setOpponentData(profileImg, name)
+                    })
+            }
         }
     }
 }

@@ -21,14 +21,14 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import ru.test.andernam.domain.ipl.DatabaseRequests
 import ru.test.andernam.view.components.screens.setMessagePathAndUsers
-import ru.test.andernam.view.components.screens.setPair
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.UUID
+import javax.inject.Inject
 
 @Module
 @InstallIn(SingletonComponent::class)
-class DataBaseRequestImpl: DatabaseRequests {
+class DataBaseRequestImpl @Inject constructor(private val liveUserData: LiveUserData): DatabaseRequests {
 
     override lateinit var database: FirebaseFirestore
     override lateinit var storage: FirebaseStorage
@@ -54,8 +54,13 @@ class DataBaseRequestImpl: DatabaseRequests {
         }
     }
 
-    override fun downloadUserProfile(idClient: String): Unit = runBlocking {
-        async {
+//    fun getUserProfile(idClient: String) : LiveData<UserClass>{
+//        var userClass = UserClass()
+//
+//    }
+
+    override fun downloadUserProfile(idClient: String) {
+//        async {
             database = Firebase.firestore
             storage = Firebase.storage
 
@@ -72,6 +77,7 @@ class DataBaseRequestImpl: DatabaseRequests {
 
             var name: String
 
+            var userDataClass = UserClass()
 
                 dbState = database.collection("usersData").document(idClient).get()
                     .addOnSuccessListener { document ->
@@ -96,16 +102,35 @@ class DataBaseRequestImpl: DatabaseRequests {
                         name = allDataAboutMap["clientData"].toString()
                         profilePhotoPath = allDataAboutMap["profilePhoto"].toString()
                         clientDialogsList = allDataAboutMap["dialogs"].toString()
-                        if (profilePhotoPath != null)
-                            profilePhotoUri = Uri.parse(profilePhotoPath!!)
-                        userData = Pair(profilePhotoUri, name)
-                        setPair(userData)
-                    }
 
-            getAllUsers(idClient)
+
+                        println(name)
+                        var userClass = ProfileInfo()
+                        userClass.name = name
+                        userClass.linkImage = Uri.parse(profilePhotoPath)
+//                        userProfileInfo.linkImage = profilePhotoPath
+//                        userProfileInfo.dialogsLink = clientDialogsList
+
+//                        if (profilePhotoPath != null)
+//                            userProfileInfo.linkImage = Uri.parse(profilePhotoPath!!)
+//                            profilePhotoUri = Uri.parse(profilePhotoPath!!)
+//                        userData = Pair(profilePhotoUri, name)
+//                        setPair(userData)
+//                        liveUserData.profileInfo.value = userProfileInfo
+//                        liveUserData.profileInfo.postValue(userClass)
+                        liveUserData.setProfileInfo(userClass)
+                    }
+//        }
+
+
+//        var newLiveData = MutableLiveData(userDataClass)
+//        newLiveData.value = userDataClass
+//            getAllUsers(idClient)
+//        return newLiveData
         }
 
-    }
+
+//    }
 
     @SuppressLint("SuspiciousIndentation")
     override fun getAllUsers(idClient: String){
