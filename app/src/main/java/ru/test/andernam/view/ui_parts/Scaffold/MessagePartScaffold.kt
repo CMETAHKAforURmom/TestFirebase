@@ -1,6 +1,8 @@
 package ru.test.andernam.view.ui_parts.Scaffold
 
 import android.net.Uri
+import android.view.MotionEvent
+import android.view.View
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
