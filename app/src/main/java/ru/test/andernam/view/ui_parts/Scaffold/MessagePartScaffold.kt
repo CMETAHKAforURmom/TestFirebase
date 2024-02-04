@@ -30,9 +30,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import ru.test.andernam.view.components.Routes
+import ru.test.andernam.R
 import ru.test.andernam.view.components.navigateTo
 import ru.test.andernam.view.userClass
 
@@ -46,11 +47,12 @@ fun setOpponentData(opponentImageGet: MutableState<Uri>, opponentNameGet: Mutabl
 
 @Composable
 fun TopMessageScaffold() {
+    val back = LocalContext.current.getString(R.string.back)
     Row(modifier = Modifier
         .fillMaxWidth()
         .size(64.dp), verticalAlignment = Alignment.CenterVertically) {
         Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back", modifier = Modifier.clickable {
-            navigateTo(Routes.Back)
+            navigateTo(back)
         })
         AsyncImage(
             model = opponentImage.value, contentDescription = "Image profile",

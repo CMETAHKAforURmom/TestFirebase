@@ -1,4 +1,4 @@
-package ru.test.andernam.domain
+package ru.test.andernam.domain.old
 
 import androidx.lifecycle.MutableLiveData
 

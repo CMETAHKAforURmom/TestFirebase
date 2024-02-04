@@ -1,15 +1,13 @@
-package ru.test.andernam.domain.ipl
+package ru.test.andernam.domain.old.ipl
 
 import android.net.Uri
 import androidx.compose.runtime.snapshots.SnapshotStateList
-import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
-import ru.test.andernam.domain.Message
-import ru.test.andernam.domain.UserClass
+import ru.test.andernam.domain.old.Message
 
 interface DatabaseRequests {
 

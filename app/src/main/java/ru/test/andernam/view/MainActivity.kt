@@ -11,10 +11,10 @@ import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import ru.test.andernam.domain.AuthThingClass
-import ru.test.andernam.domain.LiveUserData
-import ru.test.andernam.domain.UserClass
-import ru.test.andernam.domain.ipl.DownloadUploadHelp
-import ru.test.andernam.ui.theme.TestFirebaseTheme
+import ru.test.andernam.domain.repository.LiveUserData
+import ru.test.andernam.domain.old.UserClass
+import ru.test.andernam.domain.old.ipl.DownloadUploadHelp
+import ru.test.andernam.view.theme.TestFirebaseTheme
 import ru.test.andernam.view.components.Navigator
 import javax.inject.Inject
 import kotlin.concurrent.thread
@@ -56,7 +56,7 @@ class MainActivity : ComponentActivity() {
                 navigator.Navigation(navController)
             }
             lifecycleScope.launchWhenCreated {
-                userLiveData.screen.collectLatest {
+                userLiveData.stateFlowScreen.collectLatest {
                     navController.navigate(it)
                 }
             }

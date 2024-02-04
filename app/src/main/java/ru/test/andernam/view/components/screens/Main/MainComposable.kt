@@ -36,24 +36,12 @@ class MainComposable @Inject constructor(private val mainScreenViewModel: MainSc
     @Composable
     fun MainComp(){
 
-        val loadDefault = "Still loading, please wait"
-
         var uriForUpload by remember {
             mutableStateOf(Uri.EMPTY)
-        }
-        var localName by remember {
-            mutableStateOf(loadDefault)
         }
         var localUri by remember {
             mutableStateOf(Uri.EMPTY)
         }
-
-//        val liveUserObserver = Observer<String> {value ->
-//            localName = value
-//        }
-//
-//        localName = mainScreenViewModel.nameFromDB.value
-
         var localProfilePhotoUri by remember {
             mutableStateOf(Uri.EMPTY)
         }
@@ -107,8 +95,7 @@ class MainComposable @Inject constructor(private val mainScreenViewModel: MainSc
 
                 Button(
                     onClick = {
-                        if (uriForUpload != null)
-                            userClass.uploadUserInfo(uriForUpload, localName)
+                              mainScreenViewModel.saveUserData()
                     },
                     modifier = Modifier
                         .align(Alignment.CenterHorizontally)

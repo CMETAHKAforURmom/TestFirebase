@@ -18,8 +18,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import ru.test.andernam.view.components.Routes
+import ru.test.andernam.R
 import ru.test.andernam.view.components.navigateTo
 
 var isShowHelper = mutableStateOf(false)
@@ -30,7 +31,6 @@ var isMessageShowHelper = mutableStateOf(true)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun mainScaffold() {
-
     var isShow by remember{
         mutableStateOf(false)
     }
@@ -42,7 +42,9 @@ fun mainScaffold() {
     isShow = isShowHelper.value
     isMessage = isMessageShowHelper.value
 
-    val defaultMapForBottomNavigation = mapOf("Users" to { navigateTo(Routes.Blog) }, "Profile" to {navigateTo(Routes.Main)})
+    val messages = LocalContext.current.getString(R.string.messages)
+    val profile = LocalContext.current.getString(R.string.profile)
+    val defaultMapForBottomNavigation = mapOf("Users" to { navigateTo(messages) }, "Profile" to {navigateTo(profile)})
     Scaffold(
         topBar = { AnimatedVisibility(visible = isMessage) {
         TopAppBar(title = {TopMessageScaffold()})

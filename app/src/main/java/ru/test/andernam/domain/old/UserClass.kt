@@ -1,10 +1,10 @@
-package ru.test.andernam.domain
+package ru.test.andernam.domain.old
 
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.DocumentReference
-import ru.test.andernam.domain.ipl.DatabaseRequests
+import ru.test.andernam.domain.old.ipl.DatabaseRequests
 
 class UserClass {
 

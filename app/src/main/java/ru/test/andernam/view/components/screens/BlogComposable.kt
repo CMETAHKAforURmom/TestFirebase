@@ -23,13 +23,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import ru.test.andernam.domain.User
-import ru.test.andernam.view.components.Routes
+import ru.test.andernam.R
+import ru.test.andernam.domain.old.User
 import ru.test.andernam.view.components.navigateTo
 import ru.test.andernam.view.userClass
-import javax.inject.Inject
 import javax.inject.Singleton
 
 
@@ -58,6 +58,8 @@ class BlogComposable () {
     @Composable
     fun CardElementUser(profileLinkL: String, name: String, profileImg: Uri) {
 
+
+        val message = LocalContext.current.getString(R.string.message_screen)
         Spacer(modifier = Modifier.height(15.dp))
         Row(
             modifier = Modifier
@@ -80,7 +82,7 @@ class BlogComposable () {
                     Icons.Default.Send,
                     contentDescription = "Send",
                     modifier = Modifier.clickable {
-                        navigateTo(Routes.Message)
+                        navigateTo(message)
                         userClass.startMessagingWith(profileLinkL)
                         setOpponentData(profileImg, name)
                     })

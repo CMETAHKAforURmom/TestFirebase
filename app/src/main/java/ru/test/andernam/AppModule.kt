@@ -5,7 +5,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import ru.test.andernam.domain.UserClass
+import ru.test.andernam.domain.old.UserClass
 import ru.test.andernam.view.MainActivity
 import javax.inject.Singleton
 

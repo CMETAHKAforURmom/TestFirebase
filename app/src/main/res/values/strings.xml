@@ -1,4 +1,11 @@
 <resources>
     <string name="app_name">TestFirebase</string>
     <string name="title_activity_user">UserActivity</string>
+    <string name="start">start</string>
+    <string name="profile">profile</string>
+    <string name="messages">messages</string>
+    <string name="message_screen">messageScreen</string>
+<!--    ???-->
+    <string name="back">back</string>
+    <string name="default_screen">default</string>
 </resources>

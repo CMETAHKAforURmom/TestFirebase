@@ -1,9 +1,9 @@
-package ru.test.andernam.domain
+package ru.test.andernam.domain.old
 
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.google.firebase.firestore.DocumentReference
-import ru.test.andernam.domain.ipl.DatabaseRequests
-import ru.test.andernam.domain.ipl.DownloadUploadHelp
+import ru.test.andernam.domain.old.ipl.DatabaseRequests
+import ru.test.andernam.domain.old.ipl.DownloadUploadHelp
 
 class IDownloadUploadHelp : DownloadUploadHelp {
 

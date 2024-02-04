@@ -1,4 +1,4 @@
-package ru.test.andernam.domain
+package ru.test.andernam.domain.old
 
 import android.annotation.SuppressLint
 import android.net.Uri
@@ -19,7 +19,9 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
-import ru.test.andernam.domain.ipl.DatabaseRequests
+import ru.test.andernam.domain.old.ipl.DatabaseRequests
+import ru.test.andernam.domain.repository.LiveUserData
+import ru.test.andernam.domain.repository.ProfileInfo
 import ru.test.andernam.view.components.screens.setMessagePathAndUsers
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -28,7 +30,8 @@ import javax.inject.Inject
 
 @Module
 @InstallIn(SingletonComponent::class)
-class DataBaseRequestImpl @Inject constructor(private val liveUserData: LiveUserData): DatabaseRequests {
+class DataBaseRequestImpl @Inject constructor(private val liveUserData: LiveUserData):
+    DatabaseRequests {
 
     override lateinit var database: FirebaseFirestore
     override lateinit var storage: FirebaseStorage
@@ -103,11 +106,11 @@ class DataBaseRequestImpl @Inject constructor(private val liveUserData: LiveUser
                         profilePhotoPath = allDataAboutMap["profilePhoto"].toString()
                         clientDialogsList = allDataAboutMap["dialogs"].toString()
 
-
-                        println(name)
-                        var userClass = ProfileInfo()
-                        userClass.name = name
-                        userClass.linkImage = Uri.parse(profilePhotoPath)
+//
+//                        println(name)
+//                        var userClass = ProfileInfo()
+//                        userClass.name = name
+//                        userClass.linkImage = Uri.parse(profilePhotoPath)
 //                        userProfileInfo.linkImage = profilePhotoPath
 //                        userProfileInfo.dialogsLink = clientDialogsList
 
@@ -118,7 +121,7 @@ class DataBaseRequestImpl @Inject constructor(private val liveUserData: LiveUser
 //                        setPair(userData)
 //                        liveUserData.profileInfo.value = userProfileInfo
 //                        liveUserData.profileInfo.postValue(userClass)
-                        liveUserData.setProfileInfo(userClass)
+//                        liveUserData.setProfileInfo(userClass)
                     }
 //        }
 

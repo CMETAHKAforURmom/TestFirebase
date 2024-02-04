@@ -1,4 +1,4 @@
-package ru.test.andernam.domain
+package ru.test.andernam.domain.old
 
 import dagger.Module
 import dagger.hilt.InstallIn
