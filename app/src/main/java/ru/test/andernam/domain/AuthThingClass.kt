@@ -16,9 +16,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import ru.test.andernam.AppModule.provideDB
 import ru.test.andernam.AppModule.provideUserLiveData
-import ru.test.andernam.domain.old.DataBaseRequestImpl
 import ru.test.andernam.domain.repository.LiveUserData
-import ru.test.andernam.view.components.navigateTo
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -109,6 +107,7 @@ class AuthThingClass @Inject constructor(val activity: Activity) {
 //                        }
 //                        provideUserLiveData().setScreen("profile")
                         result = true
+                        provideUserLiveData().setAuthPassed()
                         if (user != null)
                             if (user?.phoneNumber != null) {
 //                                userLiveData.phone.postValue(auth.currentUser?.phoneNumber)

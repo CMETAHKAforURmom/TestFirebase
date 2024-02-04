@@ -12,14 +12,13 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import ru.test.andernam.AppModule.provideUserLiveData
 import ru.test.andernam.domain.AuthThingClass
-import ru.test.andernam.domain.repository.LiveUserData
 import ru.test.andernam.domain.old.UserClass
 import ru.test.andernam.domain.old.ipl.DownloadUploadHelp
+import ru.test.andernam.domain.repository.LiveUserData
 import ru.test.andernam.navigation.AppNavGraph
-import ru.test.andernam.view.theme.TestFirebaseTheme
 import ru.test.andernam.view.components.Navigator
+import ru.test.andernam.view.theme.TestFirebaseTheme
 import javax.inject.Inject
-import kotlin.concurrent.thread
 
 lateinit var userClass: DownloadUploadHelp
 
@@ -56,6 +55,13 @@ class MainActivity : ComponentActivity() {
             TestFirebaseTheme {
 //                navigator.Navigation(navController)
                 AppNavGraph(navController = navController)
+
+            }
+            lifecycleScope.launchWhenCreated {
+                userLiveData.isAuthPassed.collectLatest {
+                    if(it)
+                        navController.navigate("messages")
+                }
             }
 //            authThingClass.start(userLiveData)
 //            lifecycleScope.launchWhenCreated {

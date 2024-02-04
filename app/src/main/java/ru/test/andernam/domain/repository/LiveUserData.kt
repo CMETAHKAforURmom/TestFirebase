@@ -1,8 +1,5 @@
 package ru.test.andernam.domain.repository
 
-import androidx.lifecycle.MutableLiveData
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
@@ -16,6 +13,13 @@ class LiveUserData @Inject constructor(){
     private val _stateFlowProfileInfo = MutableStateFlow<ProfileInfo?>(null)
     val stateFlowProfileInfo = _stateFlowProfileInfo.asStateFlow()
 
+    private val _isAuthPassed = MutableStateFlow<Boolean>(false)
+    val isAuthPassed = _isAuthPassed.asStateFlow()
+
+
+    fun setAuthPassed(){
+        _isAuthPassed.value = true
+    }
     fun setProfileInfo(userProfileInfo: ProfileInfo){
         _stateFlowProfileInfo.value = userProfileInfo
     }

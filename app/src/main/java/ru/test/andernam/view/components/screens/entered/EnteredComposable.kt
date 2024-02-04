@@ -39,7 +39,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import ru.test.andernam.R
-import javax.inject.Inject
 
 
 @Composable
@@ -194,9 +193,10 @@ fun EnteredComp(onNavigateToMessages: () -> Unit) {
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone)
                     )
                     Button(
-                        onClick = {
-//                            commonViewModel.returnCode(code, onNavigateToMessages)
-                            onNavigateToMessages
+                        onClick =
+                        {
+                            commonViewModel.returnCode(code)
+//                            onNavigateToMessages
                         },
                         Modifier
                             .fillMaxWidth()
