@@ -10,10 +10,12 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
+import ru.test.andernam.AppModule.provideUserLiveData
 import ru.test.andernam.domain.AuthThingClass
 import ru.test.andernam.domain.repository.LiveUserData
 import ru.test.andernam.domain.old.UserClass
 import ru.test.andernam.domain.old.ipl.DownloadUploadHelp
+import ru.test.andernam.navigation.AppNavGraph
 import ru.test.andernam.view.theme.TestFirebaseTheme
 import ru.test.andernam.view.components.Navigator
 import javax.inject.Inject
@@ -43,8 +45,7 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var authThingClass: AuthThingClass
 
-    @Inject
-    lateinit var userLiveData: LiveUserData
+    private var userLiveData: LiveUserData = provideUserLiveData()
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,18 +54,20 @@ class MainActivity : ComponentActivity() {
         setContent {
             val navController = rememberNavController()
             TestFirebaseTheme {
-                navigator.Navigation(navController)
+//                navigator.Navigation(navController)
+                AppNavGraph(navController = navController)
             }
-            lifecycleScope.launchWhenCreated {
-                userLiveData.stateFlowScreen.collectLatest {
-                    navController.navigate(it)
-                }
-            }
+//            authThingClass.start(userLiveData)
+//            lifecycleScope.launchWhenCreated {
+//                userLiveData.stateFlowScreen.collectLatest {
+//                    navController.navigate(it)
+//                }
+//            }
         }
 
 
-        thread {
-            authThingClass.start(userLiveData)
-        }
+//        thread {
+//
+//        }
     }
 }

@@ -30,12 +30,10 @@ import ru.test.andernam.view.userClass
 import javax.inject.Inject
 import javax.inject.Singleton
 
-@Singleton
-class MainComposable @Inject constructor(private val mainScreenViewModel: MainScreenViewModel) {
-
     @Composable
     fun MainComp(){
 
+        val mainScreenViewModel = MainScreenViewModel()
         var uriForUpload by remember {
             mutableStateOf(Uri.EMPTY)
         }
@@ -118,5 +116,3 @@ class MainComposable @Inject constructor(private val mainScreenViewModel: MainSc
 
         }
     }
-
-}

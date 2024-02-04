@@ -22,7 +22,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -42,66 +41,61 @@ import androidx.compose.ui.unit.dp
 import ru.test.andernam.R
 import javax.inject.Inject
 
-class EnteredComposable @Inject constructor(private val commonViewModel: CommonViewModel) {
+
+@Composable
+fun EnteredComp(onNavigateToMessages: () -> Unit) {
+
+    var expandedPhoneSelect by remember {
+        mutableStateOf(false)
+    }
+
+    val commonViewModel = CommonViewModel()
+    val options: Map<String, Painter> = mapOf(
+        "+7" to painterResource(id = R.drawable.russia),
+        "+380" to painterResource(id = R.drawable.ukraine),
+        "+375" to painterResource(id = R.drawable.belarus)
+    )
+
+    val defaultFlag = painterResource(id = R.drawable.russia)
+
+    var selectedOptionText by remember {
+        mutableStateOf(Pair("+7", options.getOrDefault("+7", defaultFlag)))
+    }
+
+    var isCodeSend by remember {
+        mutableStateOf(false)
+    }
+
+    var phoneNumber by remember {
+        mutableStateOf("")
+    }
+
+    var code by remember {
+        mutableStateOf("")
+    }
 
 
-
-    @OptIn(ExperimentalMaterial3Api::class)
-    @Composable
-    fun EnteredComp() {
-
-//        val enteredUiState by enteredViewModel.uiState.collectAsState()
-
-        var expandedPhoneSelect by remember {
-            mutableStateOf(false)
-        }
-
-
-        val options: Map<String, Painter> = mapOf(
-            "+7" to painterResource(id = R.drawable.russia),
-            "+380" to painterResource(id = R.drawable.ukraine),
-            "+375" to painterResource(id = R.drawable.belarus)
-        )
-
-        val defaultFlag = painterResource(id = R.drawable.russia)
-
-        var selectedOptionText by remember {
-            mutableStateOf(Pair("+7", options.getOrDefault("+7", defaultFlag)))
-        }
-
-        var isCodeSend by remember {
-            mutableStateOf(false)
-        }
-
-        var phoneNumber by remember {
-            mutableStateOf("")
-        }
-
-        var code by remember {
-            mutableStateOf("")
-        }
-
-
-        Box(Modifier.fillMaxSize()) {
-            Column(
+    Box(Modifier.fillMaxSize()) {
+        Column(
+            Modifier
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(text = "Registration")
+            Row(
                 Modifier
-                    .fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .fillMaxWidth()
+                    .height(135.dp)
+                    .padding(horizontal = 25.dp, vertical = 35.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = "Registration")
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .height(135.dp)
-                        .padding(horizontal = 25.dp, vertical = 35.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
 
-                    Column {
+                Column {
 
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Row(modifier = Modifier
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier
                             .border(1.dp, Color.DarkGray, RoundedCornerShape(35f))
 //                    .height(60.dp)
                             .width(120.dp)
@@ -109,105 +103,106 @@ class EnteredComposable @Inject constructor(private val commonViewModel: CommonV
                             .clickable {
                                 expandedPhoneSelect = true
                             },
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceEvenly
-                        ) {
-                            Image(
-                                painter = selectedOptionText.second,
-                                contentDescription = "Country",
-                                modifier = Modifier.size(30.dp)
-                            )
-                            Text(text = selectedOptionText.first, modifier = Modifier)
-                            Icon(
-                                painter = painterResource(id = R.drawable.baseline_arrow_drop_down_24),
-                                contentDescription = "Arrow"
-                            )
-                        }
-                    }
-                    DropdownMenu(
-                        expanded = expandedPhoneSelect,
-                        onDismissRequest = { expandedPhoneSelect = false }
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
-                        options.forEach { country ->
-                            DropdownMenuItem(
-                                text = {
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.SpaceBetween
-                                    ) {
-                                        Image(
-                                            painter = country.value,
-                                            contentDescription = "country",
-                                            modifier = Modifier.size(30.dp)
-                                        )
-                                        Text(country.key)
-                                    }
-                                },
-                                onClick = {
-                                    selectedOptionText = selectedOptionText.copy(
-                                        first = country.key,
-                                        second = country.value
-                                    )
-                                    expandedPhoneSelect = false
-                                }
-                            )
-                        }
+                        Image(
+                            painter = selectedOptionText.second,
+                            contentDescription = "Country",
+                            modifier = Modifier.size(30.dp)
+                        )
+                        Text(text = selectedOptionText.first, modifier = Modifier)
+                        Icon(
+                            painter = painterResource(id = R.drawable.baseline_arrow_drop_down_24),
+                            contentDescription = "Arrow"
+                        )
                     }
-
-                    Spacer(modifier = Modifier.width(15.dp))
-
-                    OutlinedTextField(value = phoneNumber, onValueChange = { phoneNumber = it },
-                        modifier = Modifier
-                            .fillMaxHeight(),
-                        singleLine = true,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-                        label = { "Phone" })
                 }
-
-                Button(
-                    onClick = {
-                        isCodeSend = true
-                        commonViewModel.sendCode("${selectedOptionText.first}$phoneNumber")
-//                    authClass.enterAcc("${selectedOptionText.first}$phoneNumber")
-                    },
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 25.dp)
+                DropdownMenu(
+                    expanded = expandedPhoneSelect,
+                    onDismissRequest = { expandedPhoneSelect = false }
                 ) {
-                    Text(text = "Send!")
+                    options.forEach { country ->
+                        DropdownMenuItem(
+                            text = {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Image(
+                                        painter = country.value,
+                                        contentDescription = "country",
+                                        modifier = Modifier.size(30.dp)
+                                    )
+                                    Text(country.key)
+                                }
+                            },
+                            onClick = {
+                                selectedOptionText = selectedOptionText.copy(
+                                    first = country.key,
+                                    second = country.value
+                                )
+                                expandedPhoneSelect = false
+                            }
+                        )
+                    }
                 }
+
+                Spacer(modifier = Modifier.width(15.dp))
+
+                OutlinedTextField(value = phoneNumber, onValueChange = { phoneNumber = it },
+                    modifier = Modifier
+                        .fillMaxHeight(),
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+                    label = { "Phone" })
             }
 
-            AnimatedVisibility(visible = isCodeSend) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(color = Color.DarkGray)
-                ) {
-                    Column(
-                        Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(text = "Enter code", color = Color.White)
+            Button(
+                onClick = {
+//                    onNavigateToMessages
+                    isCodeSend = true
+                    commonViewModel.sendCode("${selectedOptionText.first}$phoneNumber")
+//                    authClass.enterAcc("${selectedOptionText.first}$phoneNumber")
+                },
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 25.dp)
+            ) {
+                Text(text = "Send!")
+            }
+        }
 
-                        TextField(
-                            value = code, onValueChange = { code = it },
-                            Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 25.dp, vertical = 35.dp), label = { "Code" },
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone)
-                        )
-                        Button(
-                            onClick = {
-                                      commonViewModel.returnCode(code)
-                            },
-                            Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 25.dp)
-                        ) {
-                            Text(text = "Sign in!")
-                        }
+        AnimatedVisibility(visible = isCodeSend) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(color = Color.DarkGray)
+            ) {
+                Column(
+                    Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(text = "Enter code", color = Color.White)
+
+                    TextField(
+                        value = code, onValueChange = { code = it },
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 25.dp, vertical = 35.dp), label = { "Code" },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone)
+                    )
+                    Button(
+                        onClick = {
+//                            commonViewModel.returnCode(code, onNavigateToMessages)
+                            onNavigateToMessages
+                        },
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 25.dp)
+                    ) {
+                        Text(text = "Sign in!")
                     }
                 }
             }

@@ -6,6 +6,9 @@ import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import ru.test.andernam.AppModule.provideAuthClass
+import ru.test.andernam.AppModule.provideDB
+import ru.test.andernam.AppModule.provideUserLiveData
 import ru.test.andernam.domain.AuthThingClass
 import ru.test.andernam.domain.DBFirstStep
 import ru.test.andernam.domain.repository.LiveUserData
@@ -13,11 +16,11 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class MainScreenViewModel @Inject constructor(
-    private val liveUserData: LiveUserData,
-    private val authThingClass: AuthThingClass,
-    private val database: DBFirstStep
-) : ViewModel() {
+class MainScreenViewModel @Inject constructor() : ViewModel() {
+
+    private val liveUserData: LiveUserData = provideUserLiveData()
+    private val authThingClass: AuthThingClass = provideAuthClass()
+    private val database: DBFirstStep = provideDB()
 
     fun exitAccount() {
         authThingClass.signOut()

@@ -8,9 +8,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import ru.test.andernam.R
-import ru.test.andernam.view.components.screens.Main.MainComposable
+import ru.test.andernam.view.components.screens.Main.MainComp
 import ru.test.andernam.view.components.screens.SendMessageScreen
-import ru.test.andernam.view.components.screens.entered.EnteredComposable
+import ru.test.andernam.view.components.screens.entered.EnteredComp
 import ru.test.andernam.view.ui_parts.Scaffold.isMessageShowHelper
 import ru.test.andernam.view.ui_parts.Scaffold.isShowHelper
 import javax.inject.Inject
@@ -20,14 +20,10 @@ import javax.inject.Singleton
 @Singleton
 class Navigator @Inject constructor() {
 
-    @Inject
-    lateinit var enteredComposable: EnteredComposable
 
 //    @Inject
 //    lateinit var blogComposable: BlogComposable
 
-    @Inject
-    lateinit var mainComposable: MainComposable
 
     var isNavigatorAsked = false
 //    var defaultDestination = Routes.Main.route
@@ -40,11 +36,11 @@ class Navigator @Inject constructor() {
         setDefController(navController)
         NavHost(navController = navController, startDestination = localContext.getString(R.string.start)) {
             composable(localContext.getString(R.string.start)) {
-                enteredComposable.EnteredComp()
+//                EnteredComp()
                 isShowHelper.value = false
             }
             composable(localContext.getString(R.string.profile)) {
-                mainComposable.MainComp()
+                MainComp()
                 isShowHelper.value = true
                 isMessageShowHelper.value = false
             }

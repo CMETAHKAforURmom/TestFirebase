@@ -4,8 +4,17 @@ import android.app.Activity
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ActivityContext
 import dagger.hilt.components.SingletonComponent
+import ru.test.andernam.domain.AuthThingClass
+import ru.test.andernam.domain.DBFirstStep
 import ru.test.andernam.domain.old.UserClass
+import ru.test.andernam.domain.repository.LiveUserData
+import ru.test.andernam.navigation.HomeImpl
+import ru.test.andernam.navigation.MessageImpl
+import ru.test.andernam.navigation.apis.FeatureApi
+import ru.test.andernam.navigation.apis.HomeApi
+import ru.test.andernam.navigation.apis.MessageApi
 import ru.test.andernam.view.MainActivity
 import javax.inject.Singleton
 
@@ -19,16 +28,30 @@ object AppModule {
         return UserClass()
     }
 
-//    @Binds
-//    @ActivityScope
-//    abstract fun bindLifecycleOwner(activity: AppCompatActivity): LifecycleOwner
-//
-//    @Singleton
-//    @Provides
-//    fun provideUserLiveData(): LiveUserData{
-//        return LiveUserData(provideUserClass())
-//    }
+    @Provides
+    fun provideHomeImpl(): HomeApi{
+        return HomeImpl()
+    }
+    @Provides
+    fun provideMessageImpl(): MessageApi{
+        return MessageImpl()
+    }
 
+    @Singleton
+    @Provides
+    fun provideAuthClass(): AuthThingClass{
+        return AuthThingClass(provideActivity())
+    }
+
+    @Provides
+    fun provideUserLiveData(): LiveUserData{
+        return LiveUserData()
+    }
+    @Singleton
+    @Provides
+    fun provideDB(): DBFirstStep{
+        return DBFirstStep()
+    }
 
     @Singleton
     @Provides

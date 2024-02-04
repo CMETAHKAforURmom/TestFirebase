@@ -14,6 +14,8 @@ import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
+import ru.test.andernam.AppModule.provideDB
+import ru.test.andernam.AppModule.provideUserLiveData
 import ru.test.andernam.domain.old.DataBaseRequestImpl
 import ru.test.andernam.domain.repository.LiveUserData
 import ru.test.andernam.view.components.navigateTo
@@ -22,14 +24,36 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class AuthThingClass @Inject constructor(val activity: Activity, val userLiveData: LiveUserData) {
+class AuthThingClass @Inject constructor(val activity: Activity) {
 
-    @Inject
-    lateinit var dbRequestImpl: DBFirstStep
+    val dbRequestImpl: DBFirstStep = provideDB()
 
     private lateinit var resendToken: PhoneAuthProvider.ForceResendingToken
     private lateinit var storedVerificationId: String
-    private lateinit var callbacks: PhoneAuthProvider.OnVerificationStateChangedCallbacks
+    private var callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+
+        override fun onVerificationCompleted(credential: PhoneAuthCredential) {
+            Log.d(ContentValues.TAG, "onVerificationCompleted:$credential")
+            user = auth.currentUser
+        }
+
+        override fun onVerificationFailed(e: FirebaseException) {
+            Log.w(ContentValues.TAG, "onVerificationFailed", e)
+            if (e is FirebaseAuthInvalidCredentialsException) {
+            } else if (e is FirebaseTooManyRequestsException) {
+            }
+        }
+
+        override fun onCodeSent(
+            verificationId: String,
+            token: PhoneAuthProvider.ForceResendingToken,
+        ) {
+            Log.d(ContentValues.TAG, "onCodeSent:$verificationId")
+            storedVerificationId = verificationId
+            isCodeSend = true
+            resendToken = token
+        }
+    }
     private var auth: FirebaseAuth = FirebaseAuth.getInstance()
     private var user: FirebaseUser? = null
     private var isCodeSend = false
@@ -64,30 +88,34 @@ class AuthThingClass @Inject constructor(val activity: Activity, val userLiveDat
             PhoneAuthProvider.verifyPhoneNumber(options)
         }
     }
-    fun signInWithCode(code: String) {
-        if (isCodeSend) {
+    fun signInWithCode(code: String): Boolean {
+        return if (isCodeSend) {
             val credential = PhoneAuthProvider.getCredential(storedVerificationId, code)
             signInWithPhoneAuthCredential(credential)
-        }
+        }else
+            false
     }
-    fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) = runBlocking{
+    fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential):Boolean{
+        var result = false
             auth.signInWithCredential(credential)
                 .addOnCompleteListener(activity) { task ->
                     if (task.isSuccessful) {
                         user = task.result?.user
-                        async {
+//                        async {
                             dbRequestImpl.downloadUserProfile(
                                 auth.currentUser?.phoneNumber.toString(),
                                 true
                             )
-                        }
-                        userLiveData.setScreen("profile")
+//                        }
+//                        provideUserLiveData().setScreen("profile")
+                        result = true
                         if (user != null)
                             if (user?.phoneNumber != null) {
 //                                userLiveData.phone.postValue(auth.currentUser?.phoneNumber)
 
                             }
                     } else {
+                        result = false
                         // Sign in failed, display a message and update the UI
                         when (task.exception) {
                             is FirebaseAuthInvalidCredentialsException -> {}
@@ -97,6 +125,7 @@ class AuthThingClass @Inject constructor(val activity: Activity, val userLiveDat
 
                     }
                 }
+        return result
         }
 
 
@@ -117,30 +146,7 @@ class AuthThingClass @Inject constructor(val activity: Activity, val userLiveDat
             }
         }
 
-        callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
 
-            override fun onVerificationCompleted(credential: PhoneAuthCredential) {
-                Log.d(ContentValues.TAG, "onVerificationCompleted:$credential")
-                user = auth.currentUser
-            }
-
-            override fun onVerificationFailed(e: FirebaseException) {
-                Log.w(ContentValues.TAG, "onVerificationFailed", e)
-                if (e is FirebaseAuthInvalidCredentialsException) {
-                } else if (e is FirebaseTooManyRequestsException) {
-                }
-            }
-
-            override fun onCodeSent(
-                verificationId: String,
-                token: PhoneAuthProvider.ForceResendingToken,
-            ) {
-                Log.d(ContentValues.TAG, "onCodeSent:$verificationId")
-                storedVerificationId = verificationId
-                isCodeSend = true
-                resendToken = token
-            }
-        }
 
     }
 
