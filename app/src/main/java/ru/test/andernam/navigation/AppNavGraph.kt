@@ -2,13 +2,9 @@ package ru.test.andernam.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavController
-import androidx.navigation.NavDestination
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavHost
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import ru.test.andernam.AppModule.provideHomeImpl
 import ru.test.andernam.AppModule.provideMessageImpl
 import ru.test.andernam.navigation.apis.FeatureApi
@@ -18,7 +14,7 @@ fun AppNavGraph(
     modifier: Modifier = Modifier,
     navController: NavHostController
 ) {
-    NavHost(navController = navController, startDestination = "home") {
+    NavHost(navController = navController, startDestination = "profile") {
         register(
             provideHomeImpl(),
             navController = navController
