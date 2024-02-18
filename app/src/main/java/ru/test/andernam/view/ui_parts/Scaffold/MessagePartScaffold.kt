@@ -1,8 +1,6 @@
 package ru.test.andernam.view.ui_parts.Scaffold
 
 import android.net.Uri
-import android.view.MotionEvent
-import android.view.View
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -35,7 +33,6 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import ru.test.andernam.R
 import ru.test.andernam.view.components.navigateTo
-import ru.test.andernam.view.userClass
 
 var opponentImage = mutableStateOf(Uri.EMPTY)
 var opponentName = mutableStateOf("")
@@ -80,7 +77,7 @@ Row(modifier = Modifier
             .border(1.dp, Color.DarkGray, RoundedCornerShape(35f)))
         Icon(imageVector = Icons.Default.Send, contentDescription = "Send action", modifier = Modifier
             .clickable {
-                userClass.sendMessage(message)
+//                userClass.sendMessage(message)
                 message = ""
             }
             .size(42.dp))

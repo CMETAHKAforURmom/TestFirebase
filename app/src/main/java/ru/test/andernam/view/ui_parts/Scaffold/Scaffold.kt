@@ -5,9 +5,6 @@ import android.annotation.SuppressLint
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
@@ -17,49 +14,64 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
-import ru.test.andernam.R
-import ru.test.andernam.view.components.navigateTo
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
+import ru.test.andernam.AppModule.provideHomeImpl
+import ru.test.andernam.AppModule.provideStrings
+import ru.test.andernam.navigation.AppNavGraph
 
-var isShowHelper = mutableStateOf(false)
-var isMessageShowHelper = mutableStateOf(true)
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun mainScaffold() {
-    var isShow by remember{
+fun MainScaffold(
+    navController: NavHostController
+) {
+    var showBottomBar by remember {
         mutableStateOf(false)
     }
 
-    var isMessage by remember{
+    var showTopBar by remember {
         mutableStateOf(false)
     }
+    val navDestination by navController.currentBackStackEntryAsState()
 
-    isShow = isShowHelper.value
-    isMessage = isMessageShowHelper.value
+    showBottomBar = (navDestination?.destination?.route == provideHomeImpl().homeRoute ||
+            navDestination?.destination?.route == provideHomeImpl().profileRoute ||
+            navDestination?.destination?.route == provideHomeImpl().messagesRoute)
+    showTopBar = (navDestination?.destination?.route == provideStrings().messageStringNavigation)
 
-    val messages = LocalContext.current.getString(R.string.messages)
-    val profile = LocalContext.current.getString(R.string.profile)
-    val defaultMapForBottomNavigation = mapOf("Users" to { navigateTo(messages) }, "Profile" to {navigateTo(profile)})
+//    val messages = LocalContext.current.getString(R.string.messages)
+//    val profile = LocalContext.current.getString(R.string.profile)
+//    val defaultMapForBottomNavigation = mapOf("Users" to { navigateTo(messages) }, "Profile" to {navigateTo(profile)})
     Scaffold(
-        topBar = { AnimatedVisibility(visible = isMessage) {
-        TopAppBar(title = {TopMessageScaffold()})
-    }},
-        content = { Box(modifier = Modifier.fillMaxSize().padding(top = if (isMessage) 46.dp else 0.dp, bottom = 60.dp)){
-//            Navigation()
-        } },
+        topBar = {
+            AnimatedVisibility(visible = showTopBar) {
+                TopAppBar(title = { TopMessageScaffold() })
+            }
+        },
         bottomBar = {
-        AnimatedVisibility(visible = isShow) {
-            BottomAppBar(content = {
-                if (isMessage)
-                    BottomMessageScaffold()
-                else
-                    BottomBarNavigation(defaultMapForBottomNavigation)
-            })
-        }
-    })
+            AnimatedVisibility(visible = showBottomBar) {
+                BottomAppBar(content = {
+                    BottomBarNavigation(
+                        mapOf(
+                            "Users" to {
+                                navController.navigate(
+                                    provideHomeImpl().messagesRoute
+                                )
+                            },
+                            "Profile" to {
+                                navController.navigate(
+                                    provideHomeImpl().profileRoute
+                                )
+                            }
+                        )
+                    )
+                }
+                )
+            }
+        }) {
+        AppNavGraph(navController = navController)
+    }
 }

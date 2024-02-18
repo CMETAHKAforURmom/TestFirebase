@@ -5,6 +5,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
+import ru.test.andernam.AppModule.provideEnterImpl
 import ru.test.andernam.AppModule.provideHomeImpl
 import ru.test.andernam.AppModule.provideMessageImpl
 import ru.test.andernam.navigation.apis.FeatureApi
@@ -14,13 +15,17 @@ fun AppNavGraph(
     modifier: Modifier = Modifier,
     navController: NavHostController
 ) {
-    NavHost(navController = navController, startDestination = "profile") {
+    NavHost(navController = navController, startDestination = provideEnterImpl().enterRoute) {
         register(
             provideHomeImpl(),
             navController = navController
         )
         register(
             provideMessageImpl(),
+            navController = navController
+        )
+        register(
+            provideEnterImpl(),
             navController = navController
         )
     }

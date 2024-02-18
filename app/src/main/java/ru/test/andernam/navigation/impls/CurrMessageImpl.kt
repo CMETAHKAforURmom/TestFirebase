@@ -1,4 +1,4 @@
-package ru.test.andernam.navigation
+package ru.test.andernam.navigation.impls
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -28,7 +28,7 @@ class CurrMessageImpl: CurrMessageApi {
             composable(route = "$messageParameterHelper/{$parameter}", arguments = listOf(
                 navArgument(parameter){type = NavType.StringType}
             )){
-                SendMessageScreen()
+                SendMessageScreen("s")
             }
         }
     }

@@ -1,18 +1,17 @@
 package ru.test.andernam.view.components.screens.entered
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
-import ru.test.andernam.AppModule.provideAuthClass
-import javax.inject.Inject
+import ru.test.andernam.AppModule.provideAuthImpl
 
-class CommonViewModel @Inject constructor(): ViewModel() {
+class CommonViewModel(private val context: Context) : ViewModel() {
 
-    val authThingClass = provideAuthClass()
+    val authClass = provideAuthImpl()
     fun sendCode(phoneNumber: String){
-        authThingClass.enterAcc(phoneNumber)
+        authClass.sendSMS(phoneNumber, context)
     }
 
-    fun returnCode(code: String):Boolean{
-        return (authThingClass.signInWithCode(code))
-
+    suspend fun returnCode(code: String):Boolean{
+        return authClass.returnSMS(code)
     }
 }

@@ -25,16 +25,17 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import ru.test.andernam.AppModule.provideMessageImpl
 import ru.test.andernam.R
 import ru.test.andernam.domain.old.User
-import ru.test.andernam.view.components.navigateTo
-import ru.test.andernam.view.userClass
-import javax.inject.Singleton
 
 
 @Composable
-fun BlogComp() {
+fun BlogComp(
+    navController: NavController
+) {
 
     Text(text = "HI beach!")
 
@@ -47,7 +48,8 @@ fun BlogComp() {
                 CardElementUser(
                     elementMassive[0],
                     elementMassive[1],
-                    Uri.parse(elementMassive[2])
+                    Uri.parse(elementMassive[2]),
+                    navController
                 )
             }
         }
@@ -56,7 +58,7 @@ fun BlogComp() {
 
 
 @Composable
-fun CardElementUser(profileLinkL: String, name: String, profileImg: Uri) {
+fun CardElementUser(profileLinkL: String, name: String, profileImg: Uri, navController: NavController) {
 
 
     val message = LocalContext.current.getString(R.string.message_screen)
@@ -81,11 +83,15 @@ fun CardElementUser(profileLinkL: String, name: String, profileImg: Uri) {
             Icon(
                 Icons.Default.Send,
                 contentDescription = "Send",
-                modifier = Modifier.clickable {
-                    navigateTo(message)
-                    userClass.startMessagingWith(profileLinkL)
-                    setOpponentData(profileImg, name)
-                })
+                modifier = Modifier.clickable{
+                    provideMessageImpl().messageHref = profileLinkL
+                    navController.navigate(provideMessageImpl().messageHref)
+                }
+
+//                    navigateTo(message)
+//                    userClass.startMessagingWith(profileLinkL)
+//                    setOpponentData(profileImg, name)
+                )
         }
     }
 }

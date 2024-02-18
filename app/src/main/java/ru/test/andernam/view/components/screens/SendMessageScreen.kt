@@ -1,8 +1,6 @@
 package ru.test.andernam.view.components.screens
 
 import android.net.Uri
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -43,9 +41,10 @@ fun setOpponentData(imageUri: Uri, opponentName: String){
     opponentUserName.value = opponentName
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun SendMessageScreen() {
+fun SendMessageScreen(
+    href: String
+) {
 //    getAllMessages() // Call "downloadPrewMessages" from DownloadUploadHelp and get snapshotState
     setOpponentData(opponentUserImage, opponentUserName)
     Box(modifier = Modifier

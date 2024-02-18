@@ -26,11 +26,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import ru.test.andernam.view.userClass
-import javax.inject.Inject
-import javax.inject.Singleton
 
-    @Composable
+@Composable
     fun MainComp(){
 
         val mainScreenViewModel = MainScreenViewModel()

@@ -4,17 +4,19 @@ import android.app.Activity
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ActivityContext
 import dagger.hilt.components.SingletonComponent
+import ru.test.andernam.data.DatabaseVariables
+import ru.test.andernam.data.StringVariables
 import ru.test.andernam.domain.AuthThingClass
 import ru.test.andernam.domain.DBFirstStep
+import ru.test.andernam.domain.newest.impl.AuthImpl
 import ru.test.andernam.domain.old.UserClass
 import ru.test.andernam.domain.repository.LiveUserData
-import ru.test.andernam.navigation.HomeImpl
-import ru.test.andernam.navigation.MessageImpl
-import ru.test.andernam.navigation.apis.FeatureApi
 import ru.test.andernam.navigation.apis.HomeApi
 import ru.test.andernam.navigation.apis.MessageApi
+import ru.test.andernam.navigation.impls.EnterImpl
+import ru.test.andernam.navigation.impls.HomeImpl
+import ru.test.andernam.navigation.impls.MessageImpl
 import ru.test.andernam.view.MainActivity
 import javax.inject.Singleton
 
@@ -28,6 +30,27 @@ object AppModule {
         return UserClass()
     }
 
+    @Singleton
+    @Provides
+    fun provideDatabase() : DatabaseVariables{
+        return DatabaseVariables()
+    }
+
+    @Singleton
+    @Provides
+    fun provideAuthImpl(): AuthImpl{
+        return AuthImpl(provideDatabase())
+    }
+
+    @Provides
+    fun provideStrings(): StringVariables{
+        return StringVariables()
+    }
+
+    @Provides
+    fun provideEnterImpl(): EnterImpl{
+        return EnterImpl()
+    }
     @Provides
     fun provideHomeImpl(): HomeApi{
         return HomeImpl()

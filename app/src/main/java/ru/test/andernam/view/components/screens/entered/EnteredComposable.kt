@@ -1,5 +1,7 @@
 package ru.test.andernam.view.components.screens.entered
 
+import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -30,17 +32,22 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import ru.test.andernam.R
 
 
+@SuppressLint("ShowToast")
 @Composable
 fun EnteredComp(onNavigateToMessages: () -> Unit) {
 
@@ -48,14 +55,17 @@ fun EnteredComp(onNavigateToMessages: () -> Unit) {
         mutableStateOf(false)
     }
 
-    val commonViewModel = CommonViewModel()
+    val commonViewModel = CommonViewModel(LocalContext.current)
     val options: Map<String, Painter> = mapOf(
         "+7" to painterResource(id = R.drawable.russia),
         "+380" to painterResource(id = R.drawable.ukraine),
         "+375" to painterResource(id = R.drawable.belarus)
     )
 
+    val context = LocalContext.current
     val defaultFlag = painterResource(id = R.drawable.russia)
+
+    val coroutine = rememberCoroutineScope()
 
     var selectedOptionText by remember {
         mutableStateOf(Pair("+7", options.getOrDefault("+7", defaultFlag)))
@@ -195,8 +205,18 @@ fun EnteredComp(onNavigateToMessages: () -> Unit) {
                     Button(
                         onClick =
                         {
-                            commonViewModel.returnCode(code)
-//                            onNavigateToMessages
+                            val request = coroutine.async {
+                                Log.i("Try enter", "Trying...")
+                                return@async commonViewModel.returnCode(code)
+                            }
+                            coroutine.launch {
+                                if(request.await()) {
+                                    onNavigateToMessages.invoke()
+                                    Log.i("Try enter", "Im good")
+                                }else
+                                    Log.i("Try enter", "Im not good")
+                            }
+
                         },
                         Modifier
                             .fillMaxWidth()

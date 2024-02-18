@@ -12,6 +12,9 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import ru.test.andernam.AppModule.provideDB
@@ -86,36 +89,33 @@ class AuthThingClass @Inject constructor(val activity: Activity) {
             PhoneAuthProvider.verifyPhoneNumber(options)
         }
     }
-    fun signInWithCode(code: String): Boolean {
+    suspend fun signInWithCode(code: String): Boolean {
         return if (isCodeSend) {
             val credential = PhoneAuthProvider.getCredential(storedVerificationId, code)
             signInWithPhoneAuthCredential(credential)
         }else
             false
     }
-    fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential):Boolean{
-        var result = false
+    @OptIn(DelicateCoroutinesApi::class)
+    suspend fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential):Boolean {
+        val request = GlobalScope.async(Dispatchers.IO) {
+            var result = false
             auth.signInWithCredential(credential)
                 .addOnCompleteListener(activity) { task ->
                     if (task.isSuccessful) {
                         user = task.result?.user
-//                        async {
-                            dbRequestImpl.downloadUserProfile(
-                                auth.currentUser?.phoneNumber.toString(),
-                                true
-                            )
-//                        }
-//                        provideUserLiveData().setScreen("profile")
+                        dbRequestImpl.downloadUserProfile(
+                            auth.currentUser?.phoneNumber.toString(),
+                            true
+                        )
                         result = true
                         provideUserLiveData().setAuthPassed()
                         if (user != null)
                             if (user?.phoneNumber != null) {
-//                                userLiveData.phone.postValue(auth.currentUser?.phoneNumber)
 
                             }
                     } else {
                         result = false
-                        // Sign in failed, display a message and update the UI
                         when (task.exception) {
                             is FirebaseAuthInvalidCredentialsException -> {}
                             is FirebaseTooManyRequestsException -> {}
@@ -124,8 +124,10 @@ class AuthThingClass @Inject constructor(val activity: Activity) {
 
                     }
                 }
-        return result
+            return@async result
         }
+        return request.await()
+    }
 
 
     fun start (userLiveData: LiveUserData) {
