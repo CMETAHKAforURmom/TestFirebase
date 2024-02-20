@@ -7,7 +7,7 @@ interface CloudDatabaseAccessApi {
 
     suspend fun downloadProfile(userId: String): UserInfo
 
-    suspend fun uploadUserInfo(imageHref: Uri, name: String)
+    suspend fun uploadUserInfo(imageHref: Uri, name: String, userId: String): Result<String>
 
-    suspend fun sendMessage(message: String, userId: String)
+    suspend fun sendMessage(message: String, userId: String, messageLink: String)
 }

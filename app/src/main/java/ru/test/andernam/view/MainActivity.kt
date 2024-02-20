@@ -5,6 +5,7 @@ import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.navigation.compose.rememberNavController
 import com.google.firebase.appcheck.ktx.appCheck
@@ -12,6 +13,7 @@ import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderF
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.ktx.initialize
 import dagger.hilt.android.AndroidEntryPoint
+import ru.test.andernam.view.components.screens.messages.MessageListViewModel
 import ru.test.andernam.view.theme.TestFirebaseTheme
 import ru.test.andernam.view.ui_parts.Scaffold.MainScaffold
 
@@ -20,6 +22,7 @@ import ru.test.andernam.view.ui_parts.Scaffold.MainScaffold
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
+//    private val viewModelList: MessageListViewModel by viewModels()
 //    @get:Provides
 //    val context: LifecycleOwner = this
 //    private val stringLive = LiveUserData(userClass)

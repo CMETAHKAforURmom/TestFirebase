@@ -1,4 +1,4 @@
-package ru.test.andernam.view.components.screens
+package ru.test.andernam.view.components.screens.sendMessage
 
 import android.net.Uri
 import androidx.compose.foundation.background
@@ -45,8 +45,6 @@ fun setOpponentData(imageUri: Uri, opponentName: String) {
 fun SendMessageScreen(
     href: String
 ) {
-//    getAllMessages() // Call "downloadPrewMessages" from DownloadUploadHelp and get snapshotState
-    setOpponentData(opponentUserImage, opponentUserName)
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -101,5 +99,4 @@ fun Message(
 
         }
     }
-
 }

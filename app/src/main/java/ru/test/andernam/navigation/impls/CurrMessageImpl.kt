@@ -10,7 +10,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import ru.test.andernam.navigation.apis.CurrMessageApi
-import ru.test.andernam.view.components.screens.SendMessageScreen
+import ru.test.andernam.view.components.screens.sendMessage.SendMessageScreen
 
 class CurrMessageImpl: CurrMessageApi {
     override val messageRoute: String = "curr_message"

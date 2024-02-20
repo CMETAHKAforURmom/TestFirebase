@@ -1,12 +1,15 @@
 package ru.test.andernam.navigation.impls
 
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import ru.test.andernam.navigation.apis.HomeApi
 import ru.test.andernam.view.components.screens.messages.BlogComp
+import ru.test.andernam.view.components.screens.messages.MessageListViewModel
 import ru.test.andernam.view.components.screens.profile.MainComp
+import ru.test.andernam.view.components.screens.profile.ProfileViewModel
 
 class HomeImpl: HomeApi {
 
@@ -20,16 +23,11 @@ class HomeImpl: HomeApi {
         navController: NavHostController,
         modifier: Modifier
     ) {
-//        navGraphBuilder.composable(homeRoute){
-//            EnteredComp(onNavigateToMessages = { navController.navigate(provideMessageImpl().messageRoute){
-//                popUpTo(homeRoute){inclusive = true}
-//            } })
-//        }
         navGraphBuilder.composable(profileRoute){
-            MainComp()
+            MainComp(hiltViewModel<ProfileViewModel>())
         }
         navGraphBuilder.composable(messagesRoute){
-            BlogComp(navController)
+            BlogComp(navController, hiltViewModel<MessageListViewModel>())
         }
     }
 

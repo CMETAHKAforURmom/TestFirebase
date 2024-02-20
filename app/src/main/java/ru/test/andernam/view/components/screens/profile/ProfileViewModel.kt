@@ -1,14 +1,19 @@
 package ru.test.andernam.view.components.screens.profile
 
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import ru.test.andernam.AppModule.provideDatabase
 import ru.test.andernam.data.DatabaseVariables
+import javax.inject.Inject
 
-//@Singleton
-class ProfileViewModel : ViewModel() {
-
-//    private val storage = provideDatabase()
+@HiltViewModel
+class ProfileViewModel @Inject constructor() : ViewModel() {
 
     var storage: DatabaseVariables = provideDatabase()
 
@@ -17,11 +22,20 @@ class ProfileViewModel : ViewModel() {
         storage.user = null
     }
 
-    fun saveUserData(){
-        Log.i("DB state" , storage.localUserInfo.userName.value.toString())
+    private suspend fun downloadThisProfile(){
+        storage.getThisUser()
+    }
+
+    fun saveUserData(imageHref: Uri, name: String){
+        viewModelScope.launch(Dispatchers.IO) {
+            storage.uploadUserInfo(imageHref, name)
+        }
     }
 init {
-//    Log.i("DB state" , storage.localUserInfo.userName.value.toString())
+    viewModelScope.launch {
+        downloadThisProfile()
+    }
+
 }
 
 

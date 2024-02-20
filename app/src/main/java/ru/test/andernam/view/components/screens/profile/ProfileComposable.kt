@@ -1,6 +1,5 @@
 package ru.test.andernam.view.components.screens.profile
 
-import android.annotation.SuppressLint
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -27,11 +26,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import kotlinx.coroutines.DelicateCoroutinesApi
 
-
-@OptIn(DelicateCoroutinesApi::class)
-@SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun MainComp(profileViewModel: ProfileViewModel = ProfileViewModel()) {
 
@@ -41,9 +36,8 @@ fun MainComp(profileViewModel: ProfileViewModel = ProfileViewModel()) {
     var localUri by remember {
         mutableStateOf(Uri.EMPTY)
     }
-    var localProfilePhotoUri = profileViewModel.storage.localUserInfo.userImageHref
+    val localProfilePhotoUri = profileViewModel.storage.localUserInfo.userImageHref
     val userName = profileViewModel.storage.localUserInfo.userName
-//        localUri = profileViewModel.linkFromDB.value
     var isPairUpdated by remember {
         mutableStateOf(true)
     }
@@ -91,10 +85,7 @@ fun MainComp(profileViewModel: ProfileViewModel = ProfileViewModel()) {
 
             Button(
                 onClick = {
-                              profileViewModel.saveUserData()
-//                    Log.i("DB state", userName.value)
-//                    Log.i("DB state", localProfilePhotoUri.value.toString())
-//                    Log.i("DB state", profileViewModel.storage.localUserInfo.userName.value)
+                    profileViewModel.saveUserData(uriForUpload, userName.value)
                 },
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)

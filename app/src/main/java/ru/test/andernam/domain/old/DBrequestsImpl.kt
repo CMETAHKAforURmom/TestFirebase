@@ -21,8 +21,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import ru.test.andernam.domain.old.ipl.DatabaseRequests
 import ru.test.andernam.domain.repository.LiveUserData
-import ru.test.andernam.domain.repository.ProfileInfo
-import ru.test.andernam.view.components.screens.setMessagePathAndUsers
+import ru.test.andernam.view.components.screens.sendMessage.setMessagePathAndUsers
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.UUID

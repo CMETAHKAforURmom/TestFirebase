@@ -29,22 +29,19 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import ru.test.andernam.AppModule.provideMessageImpl
+//import ru.test.andernam.AppModule.provideMessageViewModel
 import ru.test.andernam.R
 
-@SuppressLint(
-    "CoroutineCreationDuringComposition", "SuspiciousIndentation",
-    "StateFlowValueCalledInComposition"
-)
 @Composable
 fun BlogComp(
     navController: NavController,
     messageListViewModel: MessageListViewModel = MessageListViewModel()
 ) {
 
-//    Text(text = "HI beach!")
 
     Box(
         modifier = Modifier
@@ -52,7 +49,9 @@ fun BlogComp(
     ) {
         Spacer(modifier = Modifier.width(30.dp))
         Log.i("DB state messages", messageListViewModel.storage.localUsersMessagingInfo.toString())
-        LazyColumn(modifier = Modifier.padding(15.dp).align(Alignment.TopCenter)) {
+        LazyColumn(modifier = Modifier
+            .padding(15.dp)
+            .align(Alignment.TopCenter)) {
             items(messageListViewModel.storage.localUsersMessagingInfo.size, itemContent = {
                 CardElementUser(
                     messageListViewModel.storage.localUsersMessagingInfo[it].dialogsList.value,
@@ -73,8 +72,6 @@ fun CardElementUser(
     profileImg: Uri?,
     navController: NavController
 ) {
-
-
     val message = LocalContext.current.getString(R.string.message_screen)
     Spacer(modifier = Modifier.height(15.dp))
     Row(
@@ -98,8 +95,9 @@ fun CardElementUser(
                 Icons.Default.Send,
                 contentDescription = "Send",
                 modifier = Modifier.clickable {
-                    provideMessageImpl().messageHref = profileLinkL
-                    navController.navigate(provideMessageImpl().messageHref)
+//                    provideMessageImpl().messageHref = profileLinkL
+//                    navController.navigate(provideMessageImpl().messageHref)
+
                 }
 
 //                    navigateTo(message)

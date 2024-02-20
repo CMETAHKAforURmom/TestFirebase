@@ -7,7 +7,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import ru.test.andernam.navigation.apis.MessageApi
-import ru.test.andernam.view.components.screens.SendMessageScreen
+import ru.test.andernam.view.components.screens.sendMessage.SendMessageScreen
 
 class MessageImpl: MessageApi {
     override val messageRoute: String = "messages"

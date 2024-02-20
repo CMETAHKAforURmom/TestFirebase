@@ -17,11 +17,18 @@ import ru.test.andernam.navigation.impls.EnterImpl
 import ru.test.andernam.navigation.impls.HomeImpl
 import ru.test.andernam.navigation.impls.MessageImpl
 import ru.test.andernam.view.MainActivity
+import ru.test.andernam.view.components.screens.messages.MessageListViewModel
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
+
+//    @Singleton
+//    @Provides
+//    fun provideMessageViewModel(): MessageListViewModel{
+//        return MessageListViewModel()
+//    }
 
     @Singleton
     @Provides

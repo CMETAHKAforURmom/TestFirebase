@@ -1,5 +1,6 @@
 package ru.test.andernam.data
 
+import android.net.Uri
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import com.google.firebase.auth.FirebaseAuth
@@ -14,7 +15,6 @@ import ru.test.andernam.domain.newest.impl.CloudDatabaseAccessImpl
 import javax.inject.Inject
 import javax.inject.Singleton
 
-@OptIn(DelicateCoroutinesApi::class)
 @Singleton
 class DatabaseVariables @Inject constructor() {
 
@@ -24,11 +24,14 @@ class DatabaseVariables @Inject constructor() {
     var userPhone: String? = "+79515817958"
     var localUserInfo: UserInfo = defaultUserInfo(userPhone!!)
     val localUsersMessagingInfo: MutableList<UserInfo> = mutableStateListOf()
-    val downloadState = mutableStateOf(false)
     private val databaseAccess = CloudDatabaseAccessImpl(firebaseDatabase)
 
+    suspend fun sendMessage(message: String, messageLink: String){
+        databaseAccess.sendMessage(message, userPhone!!, messageLink)
+    }
+
     suspend fun getThisUser() {
-        if (userPhone != null){
+        if (userPhone != null) {
             val anotherLocalUserInfo = databaseAccess.downloadProfile(userPhone!!)
             localUserInfo.userId = anotherLocalUserInfo.userId
             localUserInfo.userName.value = anotherLocalUserInfo.userName.value
@@ -37,39 +40,29 @@ class DatabaseVariables @Inject constructor() {
         }
     }
 
-    suspend fun getAllUsers(){
+    suspend fun getAllUsers() {
         databaseAccess.downloadAllUsers().forEach {
             localUsersMessagingInfo.add(it)
         }
     }
 
-    suspend fun getU(): MutableList<UserInfo>{
-        return databaseAccess.downloadAllUsers()
+    suspend fun uploadUserInfo(imageHref: Uri, name: String): Result<String>{
+        localUserInfo.userName.value = name
+        localUserInfo.userImageHref.value = imageHref
+        return databaseAccess.uploadUserInfo(imageHref, name, userPhone!!)
     }
 
-    private suspend fun getUser(userId: String): UserInfo? {
-        var userDownload: UserInfo? = null
-        localUsersMessagingInfo.forEach {
-            userDownload = if (it.userId.value == userId)
-                it
-            else {
-                localUsersMessagingInfo.add(databaseAccess.downloadProfile(userId))
-                localUsersMessagingInfo.last()
-            }
-        }
-        return userDownload
-    }
-
-    init {
-//        if(user != null){
-//            userPhone = user!!.phoneNumber
-            GlobalScope.async {
-                getThisUser()
-                getAllUsers()
-//                localUserInfo?.dialogsList?.forEach {
-//                    getUser(it!!)
-//                }
+//    private suspend fun getUser(userId: String): UserInfo? {
+//        var userDownload: UserInfo? = null
+//        localUsersMessagingInfo.forEach {
+//            userDownload = if (it.userId.value == userId)
+//                it
+//            else {
+//                localUsersMessagingInfo.add(databaseAccess.downloadProfile(userId))
+//                localUsersMessagingInfo.last()
 //            }
-        }
-    }
+//        }
+//        return userDownload
+//    }
+
 }
