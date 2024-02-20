@@ -36,7 +36,7 @@ fun setMessagePathAndUsers(messageListPath: SnapshotStateList<Message>, Client: 
     thisUser = Client
 }
 
-fun setOpponentData(imageUri: Uri, opponentName: String){
+fun setOpponentData(imageUri: Uri, opponentName: String) {
     opponentUserImage.value = imageUri
     opponentUserName.value = opponentName
 }
@@ -47,25 +47,32 @@ fun SendMessageScreen(
 ) {
 //    getAllMessages() // Call "downloadPrewMessages" from DownloadUploadHelp and get snapshotState
     setOpponentData(opponentUserImage, opponentUserName)
-    Box(modifier = Modifier
-        .fillMaxSize()
-        .background(Pink80)){
-    LazyColumn(modifier = Modifier.padding(15.dp)) {
-        items(messageGettingList.size, itemContent = {
-            val localDateTime = messageGettingList[it].date.split(" ")[1].split(":")
-            Message(
-                messageText = messageGettingList[it].messageText,
-                messageDate = localDateTime[0]+ ":" + localDateTime[1],
-                Modifier.padding(5.dp),
-                (messageGettingList[it].user == thisUser)
-            )
-        })
-    }
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Pink80)
+    ) {
+        LazyColumn(modifier = Modifier.padding(15.dp)) {
+            items(messageGettingList.size, itemContent = {
+                val localDateTime = messageGettingList[it].date.split(" ")[1].split(":")
+                Message(
+                    messageText = messageGettingList[it].messageText,
+                    messageDate = localDateTime[0] + ":" + localDateTime[1],
+                    Modifier.padding(5.dp),
+                    (messageGettingList[it].user == thisUser)
+                )
+            })
+        }
     }
 }
 
 @Composable
-fun Message(messageText: String, messageDate: String, modifier: Modifier = Modifier, flagAddress: Boolean) {
+fun Message(
+    messageText: String,
+    messageDate: String,
+    modifier: Modifier = Modifier,
+    flagAddress: Boolean
+) {
     Box(modifier = modifier.fillMaxSize()) {
         Box(
             modifier = Modifier
@@ -86,9 +93,11 @@ fun Message(messageText: String, messageDate: String, modifier: Modifier = Modif
                     .padding(7.dp)
                     .padding(bottom = 7.dp, end = 3.dp)
             )
-            Text(text = messageDate, fontSize = 10.sp, modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(5.dp))
+            Text(
+                text = messageDate, fontSize = 10.sp, modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(5.dp)
+            )
 
         }
     }

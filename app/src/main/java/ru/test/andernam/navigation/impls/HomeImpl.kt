@@ -5,8 +5,8 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import ru.test.andernam.navigation.apis.HomeApi
-import ru.test.andernam.view.components.screens.BlogComp
-import ru.test.andernam.view.components.screens.Main.MainComp
+import ru.test.andernam.view.components.screens.messages.BlogComp
+import ru.test.andernam.view.components.screens.profile.MainComp
 
 class HomeImpl: HomeApi {
 

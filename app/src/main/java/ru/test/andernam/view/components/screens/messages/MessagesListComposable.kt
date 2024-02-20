@@ -1,17 +1,21 @@
-package ru.test.andernam.view.components.screens
+package ru.test.andernam.view.components.screens.messages
 
+import android.annotation.SuppressLint
 import android.net.Uri
+import android.util.Log
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -29,36 +33,46 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import ru.test.andernam.AppModule.provideMessageImpl
 import ru.test.andernam.R
-import ru.test.andernam.domain.old.User
 
-
+@SuppressLint(
+    "CoroutineCreationDuringComposition", "SuspiciousIndentation",
+    "StateFlowValueCalledInComposition"
+)
 @Composable
 fun BlogComp(
-    navController: NavController
+    navController: NavController,
+    messageListViewModel: MessageListViewModel = MessageListViewModel()
 ) {
 
-    Text(text = "HI beach!")
+//    Text(text = "HI beach!")
 
-    Row {
-
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
         Spacer(modifier = Modifier.width(30.dp))
-
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            User.dialogList?.forEach { elementMassive ->
+        Log.i("DB state messages", messageListViewModel.storage.localUsersMessagingInfo.toString())
+        LazyColumn(modifier = Modifier.padding(15.dp).align(Alignment.TopCenter)) {
+            items(messageListViewModel.storage.localUsersMessagingInfo.size, itemContent = {
                 CardElementUser(
-                    elementMassive[0],
-                    elementMassive[1],
-                    Uri.parse(elementMassive[2]),
+                    messageListViewModel.storage.localUsersMessagingInfo[it].dialogsList.value,
+                    messageListViewModel.storage.localUsersMessagingInfo[it].userName.value,
+                    messageListViewModel.storage.localUsersMessagingInfo[it].userImageHref.value,
                     navController
                 )
-            }
+            })
         }
     }
 }
 
 
 @Composable
-fun CardElementUser(profileLinkL: String, name: String, profileImg: Uri, navController: NavController) {
+fun CardElementUser(
+    profileLinkL: String,
+    name: String,
+    profileImg: Uri?,
+    navController: NavController
+) {
 
 
     val message = LocalContext.current.getString(R.string.message_screen)
@@ -83,7 +97,7 @@ fun CardElementUser(profileLinkL: String, name: String, profileImg: Uri, navCont
             Icon(
                 Icons.Default.Send,
                 contentDescription = "Send",
-                modifier = Modifier.clickable{
+                modifier = Modifier.clickable {
                     provideMessageImpl().messageHref = profileLinkL
                     navController.navigate(provideMessageImpl().messageHref)
                 }
@@ -91,7 +105,7 @@ fun CardElementUser(profileLinkL: String, name: String, profileImg: Uri, navCont
 //                    navigateTo(message)
 //                    userClass.startMessagingWith(profileLinkL)
 //                    setOpponentData(profileImg, name)
-                )
+            )
         }
     }
 }

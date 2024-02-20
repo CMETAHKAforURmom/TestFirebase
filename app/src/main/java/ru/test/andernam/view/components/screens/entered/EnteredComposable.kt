@@ -55,7 +55,7 @@ fun EnteredComp(onNavigateToMessages: () -> Unit) {
         mutableStateOf(false)
     }
 
-    val commonViewModel = CommonViewModel(LocalContext.current)
+    val enteredViewModel = EnteredViewModel(LocalContext.current)
     val options: Map<String, Painter> = mapOf(
         "+7" to painterResource(id = R.drawable.russia),
         "+380" to painterResource(id = R.drawable.ukraine),
@@ -66,6 +66,8 @@ fun EnteredComp(onNavigateToMessages: () -> Unit) {
     val defaultFlag = painterResource(id = R.drawable.russia)
 
     val coroutine = rememberCoroutineScope()
+
+
 
     var selectedOptionText by remember {
         mutableStateOf(Pair("+7", options.getOrDefault("+7", defaultFlag)))
@@ -171,7 +173,7 @@ fun EnteredComp(onNavigateToMessages: () -> Unit) {
                 onClick = {
 //                    onNavigateToMessages
                     isCodeSend = true
-                    commonViewModel.sendCode("${selectedOptionText.first}$phoneNumber")
+                    enteredViewModel.sendCode("${selectedOptionText.first}$phoneNumber")
 //                    authClass.enterAcc("${selectedOptionText.first}$phoneNumber")
                 },
                 Modifier
@@ -207,7 +209,7 @@ fun EnteredComp(onNavigateToMessages: () -> Unit) {
                         {
                             val request = coroutine.async {
                                 Log.i("Try enter", "Trying...")
-                                return@async commonViewModel.returnCode(code)
+                                return@async enteredViewModel.returnCode(code)
                             }
                             coroutine.launch {
                                 if(request.await()) {

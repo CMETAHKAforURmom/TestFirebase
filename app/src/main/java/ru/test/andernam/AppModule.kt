@@ -9,7 +9,6 @@ import ru.test.andernam.data.DatabaseVariables
 import ru.test.andernam.data.StringVariables
 import ru.test.andernam.domain.AuthThingClass
 import ru.test.andernam.domain.DBFirstStep
-import ru.test.andernam.domain.newest.impl.AuthImpl
 import ru.test.andernam.domain.old.UserClass
 import ru.test.andernam.domain.repository.LiveUserData
 import ru.test.andernam.navigation.apis.HomeApi
@@ -30,17 +29,28 @@ object AppModule {
         return UserClass()
     }
 
+//    @Singleton
+//    @Provides
+//    fun provideCloudDatabase(): CloudDatabaseAccessApi{
+//        return CloudDatabaseAccessImpl(provideDatabase())
+//    }
+
+//    @Singleton
+//    @Provides
+//    fun provideDatabaseFireBaseHelper(): DatabaseFirebaseHelper{
+//        return DatabaseFirebaseHelper()
+//    }
     @Singleton
     @Provides
-    fun provideDatabase() : DatabaseVariables{
+    fun provideDatabase() : DatabaseVariables {
         return DatabaseVariables()
     }
 
-    @Singleton
-    @Provides
-    fun provideAuthImpl(): AuthImpl{
-        return AuthImpl(provideDatabase())
-    }
+//    @Singleton
+//    @Provides
+//    fun provideAuthImpl(): AuthImpl{
+//        return AuthImpl(provideDatabase())
+//    }
 
     @Provides
     fun provideStrings(): StringVariables{

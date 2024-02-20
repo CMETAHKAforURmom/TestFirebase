@@ -21,7 +21,7 @@ private var storedVerificationId: String? = null
 
 class AuthImpl(private val database: DatabaseVariables) : AuthApi {
 
-    var activity: Activity? = null
+//    var activity: Activity? = null
 
     override fun sendSMS(phone: String, context: Context) {
         val callBack = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
@@ -45,9 +45,9 @@ class AuthImpl(private val database: DatabaseVariables) : AuthApi {
             .setPhoneNumber(phone)
             .setTimeout(60L, TimeUnit.SECONDS)
             .setCallbacks(callBack)
-            .setActivity(activity!!)
+            .setActivity(context as Activity)
             .build()
-        Log.i("Firebase auth", activity!!.toString())
+//        Log.i("Firebase auth", activity!!.toString())
         PhoneAuthProvider.verifyPhoneNumber(options)
     }
 
@@ -66,6 +66,7 @@ class AuthImpl(private val database: DatabaseVariables) : AuthApi {
                         database.user = it.result?.user
                     }
                     .addOnFailureListener {
+                        Log.e("Firebase auth", "error $it")
                     }
                 task.await()
                 return@async task.isSuccessful

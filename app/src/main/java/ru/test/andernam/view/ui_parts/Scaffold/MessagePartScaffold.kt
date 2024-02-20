@@ -32,7 +32,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import ru.test.andernam.R
-import ru.test.andernam.view.components.navigateTo
+//import ru.test.andernam.view.components.navigateTo
 
 var opponentImage = mutableStateOf(Uri.EMPTY)
 var opponentName = mutableStateOf("")
@@ -49,7 +49,7 @@ fun TopMessageScaffold() {
         .fillMaxWidth()
         .size(64.dp), verticalAlignment = Alignment.CenterVertically) {
         Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back", modifier = Modifier.clickable {
-            navigateTo(back)
+//            navigateTo(back)
         })
         AsyncImage(
             model = opponentImage.value, contentDescription = "Image profile",

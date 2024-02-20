@@ -15,7 +15,7 @@ fun AppNavGraph(
     modifier: Modifier = Modifier,
     navController: NavHostController
 ) {
-    NavHost(navController = navController, startDestination = provideEnterImpl().enterRoute) {
+    NavHost(navController = navController, startDestination = provideHomeImpl().profileRoute) {
         register(
             provideHomeImpl(),
             navController = navController
