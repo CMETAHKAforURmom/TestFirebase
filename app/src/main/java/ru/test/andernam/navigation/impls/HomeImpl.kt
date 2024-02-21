@@ -5,6 +5,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
+import ru.test.andernam.AppModule.provideCurrMessageImpl
 import ru.test.andernam.navigation.apis.HomeApi
 import ru.test.andernam.view.components.screens.messages.BlogComp
 import ru.test.andernam.view.components.screens.messages.MessageListViewModel
@@ -27,8 +28,8 @@ class HomeImpl: HomeApi {
             MainComp(hiltViewModel<ProfileViewModel>())
         }
         navGraphBuilder.composable(messagesRoute){
-            BlogComp(navController, hiltViewModel<MessageListViewModel>())
+            BlogComp({ navController.navigate(provideCurrMessageImpl().messageRoute) }, hiltViewModel<MessageListViewModel>())
         }
     }
-
+//navController.navigate(provideHomeImpl().messagesRoute)
 }

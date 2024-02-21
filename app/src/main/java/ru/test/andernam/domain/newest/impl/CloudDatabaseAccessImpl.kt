@@ -1,6 +1,7 @@
 package ru.test.andernam.domain.newest.impl
 
 import android.net.Uri
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
@@ -23,13 +24,20 @@ class CloudDatabaseAccessImpl(private val databaseVariables: FirebaseFirestore) 
                 userId = mutableStateOf(userId),
                 mutableStateOf(taskDownload.result.data?.get("clientData")?.toString() ?: ""),
                 mutableStateOf(Uri.parse(taskDownload.result.data?.get("profilePhoto").toString())),
-                mutableStateOf(taskDownload.result.data?.get("dialogs").toString())
+                mutableStateListOf(taskDownload.result.data?.get("dialogs").toString())
             )
         } else {
             databaseVariables.collection("usersData").document(userId)
                 .set(mapOf("clientData" to " ", "profilePhoto" to " ", "dialogs" to ""))
             defaultUserInfo(userId)
         }
+    }
+    suspend fun downloadDialogs(localUser: UserInfo): List<UserInfo>{
+        val usersList = mutableListOf<UserInfo>()
+        localUser.dialogsList.forEach {
+            usersList.add(downloadProfile(it.split("|")[0]))
+        }
+        return usersList
     }
 
     suspend fun downloadAllUsers(): MutableList<UserInfo> {
@@ -41,7 +49,7 @@ class CloudDatabaseAccessImpl(private val databaseVariables: FirebaseFirestore) 
                 mutableStateOf(it.id),
                 mutableStateOf(it.data?.get("clientData").toString()),
                 mutableStateOf(Uri.parse(it.data?.get("profilePhoto").toString())),
-                mutableStateOf(it.data?.get("dialogs").toString())
+                mutableStateListOf(it.data?.get("dialogs").toString())
             )
         }
         return userInfoList

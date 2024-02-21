@@ -13,6 +13,7 @@ import ru.test.andernam.domain.old.UserClass
 import ru.test.andernam.domain.repository.LiveUserData
 import ru.test.andernam.navigation.apis.HomeApi
 import ru.test.andernam.navigation.apis.MessageApi
+import ru.test.andernam.navigation.impls.CurrMessageImpl
 import ru.test.andernam.navigation.impls.EnterImpl
 import ru.test.andernam.navigation.impls.HomeImpl
 import ru.test.andernam.navigation.impls.MessageImpl
@@ -30,6 +31,12 @@ object AppModule {
 //        return MessageListViewModel()
 //    }
 
+
+    @Singleton
+    @Provides
+    fun provideCurrMessageImpl(): CurrMessageImpl{
+        return CurrMessageImpl()
+    }
     @Singleton
     @Provides
     fun provideUserClass(): UserClass {

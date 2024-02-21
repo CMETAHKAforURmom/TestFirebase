@@ -35,14 +35,13 @@ import coil.compose.AsyncImage
 import ru.test.andernam.AppModule.provideMessageImpl
 //import ru.test.andernam.AppModule.provideMessageViewModel
 import ru.test.andernam.R
+import ru.test.andernam.data.getDialogId
 
 @Composable
 fun BlogComp(
-    navController: NavController,
+    action: (href: String) -> Unit,
     messageListViewModel: MessageListViewModel = MessageListViewModel()
 ) {
-
-
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -54,10 +53,12 @@ fun BlogComp(
             .align(Alignment.TopCenter)) {
             items(messageListViewModel.storage.localUsersMessagingInfo.size, itemContent = {
                 CardElementUser(
-                    messageListViewModel.storage.localUsersMessagingInfo[it].dialogsList.value,
+//                    messageListViewModel.storage.localUsersMessagingInfo[it].dialogsList,
+                    getDialogId(messageListViewModel.storage.localUsersMessagingInfo[it],
+                        messageListViewModel.storage.localUserInfo.userId.value),
                     messageListViewModel.storage.localUsersMessagingInfo[it].userName.value,
                     messageListViewModel.storage.localUsersMessagingInfo[it].userImageHref.value,
-                    navController
+                    action
                 )
             })
         }
@@ -70,7 +71,7 @@ fun CardElementUser(
     profileLinkL: String,
     name: String,
     profileImg: Uri?,
-    navController: NavController
+    action: (href: String) -> Unit
 ) {
     val message = LocalContext.current.getString(R.string.message_screen)
     Spacer(modifier = Modifier.height(15.dp))
@@ -95,6 +96,7 @@ fun CardElementUser(
                 Icons.Default.Send,
                 contentDescription = "Send",
                 modifier = Modifier.clickable {
+                    action(profileLinkL)
 //                    provideMessageImpl().messageHref = profileLinkL
 //                    navController.navigate(provideMessageImpl().messageHref)
 

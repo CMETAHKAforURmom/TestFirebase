@@ -30,13 +30,19 @@ class DatabaseVariables @Inject constructor() {
         databaseAccess.sendMessage(message, userPhone!!, messageLink)
     }
 
+    suspend fun getRecentUsers(){
+        databaseAccess.downloadDialogs(localUserInfo).forEach{
+            localUsersMessagingInfo.add(it)
+        }
+    }
+
     suspend fun getThisUser() {
         if (userPhone != null) {
             val anotherLocalUserInfo = databaseAccess.downloadProfile(userPhone!!)
             localUserInfo.userId = anotherLocalUserInfo.userId
             localUserInfo.userName.value = anotherLocalUserInfo.userName.value
             localUserInfo.userImageHref.value = anotherLocalUserInfo.userImageHref.value
-            localUserInfo.dialogsList.value = anotherLocalUserInfo.dialogsList.value
+            localUserInfo.dialogsList = anotherLocalUserInfo.dialogsList
         }
     }
 

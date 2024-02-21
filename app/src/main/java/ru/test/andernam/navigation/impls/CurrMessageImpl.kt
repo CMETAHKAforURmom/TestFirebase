@@ -28,7 +28,7 @@ class CurrMessageImpl: CurrMessageApi {
             composable(route = "$messageParameterHelper/{$parameter}", arguments = listOf(
                 navArgument(parameter){type = NavType.StringType}
             )){
-                SendMessageScreen("s")
+                SendMessageScreen(parameter)
             }
         }
     }
