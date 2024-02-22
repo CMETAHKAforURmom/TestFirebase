@@ -12,7 +12,7 @@ import ru.test.andernam.view.components.screens.messages.MessageListViewModel
 import ru.test.andernam.view.components.screens.profile.MainComp
 import ru.test.andernam.view.components.screens.profile.ProfileViewModel
 
-class HomeImpl: HomeApi {
+class HomeImpl : HomeApi {
 
     override val homeRoute = "home"
     override val profileRoute = "$homeRoute/profile"
@@ -24,11 +24,14 @@ class HomeImpl: HomeApi {
         navController: NavHostController,
         modifier: Modifier
     ) {
-        navGraphBuilder.composable(profileRoute){
+        navGraphBuilder.composable(profileRoute) {
             MainComp(hiltViewModel<ProfileViewModel>())
         }
-        navGraphBuilder.composable(messagesRoute){
-            BlogComp({ navController.navigate(provideCurrMessageImpl().messageRoute) }, hiltViewModel<MessageListViewModel>())
+        navGraphBuilder.composable(messagesRoute) {
+            BlogComp(
+                {navController.navigate(provideCurrMessageImpl().messageRoute)},
+                hiltViewModel<MessageListViewModel>()
+            )
         }
     }
 //navController.navigate(provideHomeImpl().messagesRoute)

@@ -7,7 +7,6 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import ru.test.andernam.navigation.apis.MessageApi
-import ru.test.andernam.view.components.screens.sendMessage.SendMessageScreen
 
 class MessageImpl: MessageApi {
     override val messageRoute: String = "messages"
@@ -22,7 +21,7 @@ class MessageImpl: MessageApi {
         navGraphBuilder.composable(messageHref, arguments = listOf(navArgument(hrefDialog){
             type = NavType.StringType
         })){
-            SendMessageScreen(requireNotNull(it.arguments?.getString(messageHref)))
+//            SendMessageScreen(requireNotNull(it.arguments?.getString(messageHref)))
         }
     }
 }

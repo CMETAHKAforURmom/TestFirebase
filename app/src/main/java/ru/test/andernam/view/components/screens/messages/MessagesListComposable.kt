@@ -1,6 +1,5 @@
 package ru.test.andernam.view.components.screens.messages
 
-import android.annotation.SuppressLint
 import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.border
@@ -27,19 +26,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import ru.test.andernam.AppModule.provideMessageImpl
-//import ru.test.andernam.AppModule.provideMessageViewModel
-import ru.test.andernam.R
 import ru.test.andernam.data.getDialogId
 
 @Composable
 fun BlogComp(
-    action: (href: String) -> Unit,
+    actionToGo: () -> Unit,
     messageListViewModel: MessageListViewModel = MessageListViewModel()
 ) {
     Box(
@@ -48,18 +41,23 @@ fun BlogComp(
     ) {
         Spacer(modifier = Modifier.width(30.dp))
         Log.i("DB state messages", messageListViewModel.storage.localUsersMessagingInfo.toString())
-        LazyColumn(modifier = Modifier
-            .padding(15.dp)
-            .align(Alignment.TopCenter)) {
+        LazyColumn(
+            modifier = Modifier
+                .padding(15.dp)
+                .align(Alignment.TopCenter)
+        ) {
             items(messageListViewModel.storage.localUsersMessagingInfo.size, itemContent = {
                 CardElementUser(
-//                    messageListViewModel.storage.localUsersMessagingInfo[it].dialogsList,
-                    getDialogId(messageListViewModel.storage.localUsersMessagingInfo[it],
-                        messageListViewModel.storage.localUserInfo.userId.value),
+                    getDialogId(
+                        messageListViewModel.storage.localUsersMessagingInfo[it],
+                        messageListViewModel.storage.localUserInfo.userId.value
+                    ),
                     messageListViewModel.storage.localUsersMessagingInfo[it].userName.value,
                     messageListViewModel.storage.localUsersMessagingInfo[it].userImageHref.value,
-                    action
-                )
+                ) { dialogHref ->
+                    actionToGo.invoke()
+                    messageListViewModel.selectDialog(dialogHref)
+                }
             })
         }
     }
@@ -71,9 +69,9 @@ fun CardElementUser(
     profileLinkL: String,
     name: String,
     profileImg: Uri?,
-    action: (href: String) -> Unit
+    actionToGo: (String) -> Unit
 ) {
-    val message = LocalContext.current.getString(R.string.message_screen)
+//    val message = LocalContext.current.getString(R.string.message_screen)
     Spacer(modifier = Modifier.height(15.dp))
     Row(
         modifier = Modifier
@@ -96,15 +94,8 @@ fun CardElementUser(
                 Icons.Default.Send,
                 contentDescription = "Send",
                 modifier = Modifier.clickable {
-                    action(profileLinkL)
-//                    provideMessageImpl().messageHref = profileLinkL
-//                    navController.navigate(provideMessageImpl().messageHref)
-
+                    actionToGo(profileLinkL)
                 }
-
-//                    navigateTo(message)
-//                    userClass.startMessagingWith(profileLinkL)
-//                    setOpponentData(profileImg, name)
             )
         }
     }

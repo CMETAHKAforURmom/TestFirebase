@@ -3,6 +3,7 @@ package ru.test.andernam.domain.newest.impl
 import android.net.Uri
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
@@ -10,6 +11,7 @@ import kotlinx.coroutines.tasks.await
 import ru.test.andernam.data.UserInfo
 import ru.test.andernam.data.defaultUserInfo
 import ru.test.andernam.domain.newest.api.CloudDatabaseAccessApi
+import ru.test.andernam.domain.old.Message
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.UUID
@@ -40,6 +42,15 @@ class CloudDatabaseAccessImpl(private val databaseVariables: FirebaseFirestore) 
         return usersList
     }
 
+    fun getDialogSnapshot(dialogHref: String): SnapshotStateList<Message>{
+        val snapshotMessageDialog: SnapshotStateList<Message> = mutableStateListOf()
+        databaseVariables.collection("dialogs").document(dialogHref).addSnapshotListener{snapshot, exception ->
+            snapshot?.data?.forEach{
+                snapshotMessageDialog.add(Message(it.key.split("|")[0], it.key.split("|")[1], it.value.toString()))
+            }
+        }
+        return snapshotMessageDialog
+    }
     suspend fun downloadAllUsers(): MutableList<UserInfo> {
         val userInfoList = mutableListOf<UserInfo>()
         val task = databaseVariables.collection("usersData").get()

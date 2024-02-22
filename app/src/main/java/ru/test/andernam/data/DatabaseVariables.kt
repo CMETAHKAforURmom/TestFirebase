@@ -1,17 +1,18 @@
 package ru.test.andernam.data
 
 import android.net.Uri
+import android.util.Log
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
 import ru.test.andernam.domain.newest.impl.CloudDatabaseAccessImpl
+import ru.test.andernam.domain.old.Message
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -21,13 +22,25 @@ class DatabaseVariables @Inject constructor() {
     var auth: FirebaseAuth = FirebaseAuth.getInstance()
     private var firebaseDatabase: FirebaseFirestore = Firebase.firestore
     var user: FirebaseUser? = auth.currentUser
+    val currentDialogHref: MutableState<String> = mutableStateOf("")
     var userPhone: String? = "+79515817958"
     var localUserInfo: UserInfo = defaultUserInfo(userPhone!!)
     val localUsersMessagingInfo: MutableList<UserInfo> = mutableStateListOf()
+    val savedMessagesSnapshot: MutableMap<String, SnapshotStateList<Message>> = mutableMapOf()
     private val databaseAccess = CloudDatabaseAccessImpl(firebaseDatabase)
 
     suspend fun sendMessage(message: String, messageLink: String){
         databaseAccess.sendMessage(message, userPhone!!, messageLink)
+    }
+
+    fun selectDialogHref(dialogHref: String){
+        currentDialogHref.value = dialogHref
+        savedMessagesSnapshot[dialogHref] = databaseAccess.getDialogSnapshot(dialogHref)
+        Log.i("Navigation with...", savedMessagesSnapshot.size.toString())
+    }
+
+    fun getDialogMessageElements(dialogHref: String): SnapshotStateList<Message>{
+        return databaseAccess.getDialogSnapshot(dialogHref)
     }
 
     suspend fun getRecentUsers(){

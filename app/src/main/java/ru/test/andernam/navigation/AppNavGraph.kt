@@ -5,6 +5,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
+import ru.test.andernam.AppModule.provideCurrMessageImpl
 import ru.test.andernam.AppModule.provideEnterImpl
 import ru.test.andernam.AppModule.provideHomeImpl
 import ru.test.andernam.AppModule.provideMessageImpl
@@ -15,7 +16,7 @@ fun AppNavGraph(
     modifier: Modifier = Modifier,
     navController: NavHostController
 ) {
-    NavHost(navController = navController, startDestination = provideHomeImpl().profileRoute) {
+    NavHost(navController = navController, startDestination = provideHomeImpl().messagesRoute) {
         register(
             provideHomeImpl(),
             navController = navController
@@ -26,6 +27,10 @@ fun AppNavGraph(
         )
         register(
             provideEnterImpl(),
+            navController = navController
+        )
+        register(
+            provideCurrMessageImpl(),
             navController = navController
         )
     }

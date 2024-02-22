@@ -24,7 +24,6 @@ import ru.test.andernam.domain.old.Message
 import ru.test.andernam.view.theme.Pink80
 import ru.test.andernam.view.theme.Purple80
 import ru.test.andernam.view.theme.PurpleGrey80
-import ru.test.andernam.view.ui_parts.Scaffold.setOpponentData
 
 var messageGettingList: SnapshotStateList<Message> = mutableStateListOf()
 var thisUser = ""
@@ -43,21 +42,22 @@ fun setOpponentData(imageUri: Uri, opponentName: String) {
 
 @Composable
 fun SendMessageScreen(
-    href: String
+    sendMessageViewModel: SendMessageViewModel
 ) {
+
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(Pink80)
     ) {
         LazyColumn(modifier = Modifier.padding(15.dp)) {
-            items(messageGettingList.size, itemContent = {
-                val localDateTime = messageGettingList[it].date.split(" ")[1].split(":")
+            items(sendMessageViewModel.dialog?.size ?: 0, itemContent = {
+                val localDateTime = sendMessageViewModel.dialog?.get(it)?.date?.split(" ")?.get(1)?.split(":")
                 Message(
-                    messageText = messageGettingList[it].messageText,
-                    messageDate = localDateTime[0] + ":" + localDateTime[1],
+                    messageText = sendMessageViewModel.dialog?.get(it)?.messageText ?: "",
+                    messageDate = (localDateTime?.get(0) ?: "") + ":" + (localDateTime?.get(1) ?: ""),
                     Modifier.padding(5.dp),
-                    (messageGettingList[it].user == thisUser)
+                    (sendMessageViewModel.dialog?.get(it)?.user == thisUser)
                 )
             })
         }
