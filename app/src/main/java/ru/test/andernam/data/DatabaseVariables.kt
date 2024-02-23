@@ -6,6 +6,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.runtime.toMutableStateList
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
@@ -26,7 +27,7 @@ class DatabaseVariables @Inject constructor() {
     var userPhone: String? = "+79515817958"
     var localUserInfo: UserInfo = defaultUserInfo(userPhone!!)
     val localUsersMessagingInfo: MutableList<UserInfo> = mutableStateListOf()
-    val savedMessagesSnapshot: MutableMap<String, SnapshotStateList<Message>> = mutableMapOf()
+    val savedMessagesSnapshot: MutableMap<String, MutableList<Message>> = mutableMapOf()
     private val databaseAccess = CloudDatabaseAccessImpl(firebaseDatabase)
 
     suspend fun sendMessage(message: String, messageLink: String){
@@ -40,12 +41,12 @@ class DatabaseVariables @Inject constructor() {
     fun selectDialogHref(dialogHref: String){
         currentDialogHref.value = dialogHref
         savedMessagesSnapshot[dialogHref] = databaseAccess.getDialogSnapshot(dialogHref)
-        Log.i("Navigation with...", savedMessagesSnapshot.size.toString())
+        Log.i("Navigation with...", savedMessagesSnapshot[dialogHref].toString())
     }
 
-    fun getDialogMessageElements(dialogHref: String): SnapshotStateList<Message>{
-        return databaseAccess.getDialogSnapshot(dialogHref)
-    }
+//    fun getDialogMessageElements(dialogHref: String): SnapshotStateList<Message>{
+//        return databaseAccess.getDialogSnapshot(dialogHref)
+//    }
 
     suspend fun getRecentUsers(){
         databaseAccess.downloadDialogs(localUserInfo).forEach{
