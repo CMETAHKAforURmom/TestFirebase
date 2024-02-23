@@ -28,7 +28,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 
 @Composable
-fun MainComp(profileViewModel: ProfileViewModel = ProfileViewModel()) {
+fun MainComp(profileViewModel: ProfileViewModel) {
 
     var uriForUpload by remember {
         mutableStateOf(Uri.EMPTY)

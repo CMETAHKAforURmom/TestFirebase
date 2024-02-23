@@ -33,7 +33,7 @@ import ru.test.andernam.data.getDialogId
 @Composable
 fun BlogComp(
     actionToGo: () -> Unit,
-    messageListViewModel: MessageListViewModel = MessageListViewModel()
+    messageListViewModel: MessageListViewModel
 ) {
     Box(
         modifier = Modifier

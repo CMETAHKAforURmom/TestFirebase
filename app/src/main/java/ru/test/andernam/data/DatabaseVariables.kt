@@ -33,6 +33,10 @@ class DatabaseVariables @Inject constructor() {
         databaseAccess.sendMessage(message, userPhone!!, messageLink)
     }
 
+    fun getMessages(){
+        Log.i("Messages from db", currentDialogHref.value.toString())
+    }
+
     fun selectDialogHref(dialogHref: String){
         currentDialogHref.value = dialogHref
         savedMessagesSnapshot[dialogHref] = databaseAccess.getDialogSnapshot(dialogHref)

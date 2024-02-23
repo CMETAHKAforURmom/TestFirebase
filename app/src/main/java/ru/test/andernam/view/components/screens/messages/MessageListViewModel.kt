@@ -5,13 +5,13 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import ru.test.andernam.AppModule.provideDatabase
+import ru.test.andernam.data.DatabaseVariables
 import javax.inject.Inject
 
 @HiltViewModel
-class MessageListViewModel @Inject constructor() : ViewModel() {
+class MessageListViewModel @Inject constructor(val storage: DatabaseVariables) : ViewModel() {
 
-    val storage = provideDatabase()
+//    val storage = provideDatabase()
 
     private fun getUsers() {
         viewModelScope.launch(Dispatchers.IO){

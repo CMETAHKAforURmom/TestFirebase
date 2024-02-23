@@ -8,14 +8,11 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
-import ru.test.andernam.AppModule.provideDatabase
 import ru.test.andernam.data.DatabaseVariables
 import javax.inject.Inject
 
 @HiltViewModel
-class ProfileViewModel @Inject constructor() : ViewModel() {
-
-    var storage: DatabaseVariables = provideDatabase()
+class ProfileViewModel @Inject constructor(val storage: DatabaseVariables) : ViewModel() {
 
     fun exitAccount(){
         storage.auth.signOut()

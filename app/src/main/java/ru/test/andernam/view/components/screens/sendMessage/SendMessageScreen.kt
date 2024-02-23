@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
@@ -45,19 +46,24 @@ fun SendMessageScreen(
     sendMessageViewModel: SendMessageViewModel
 ) {
 
+    Button(onClick = {
+        sendMessageViewModel.getData()
+    }) {
+        Text(text = "")
+    }
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(Pink80)
     ) {
         LazyColumn(modifier = Modifier.padding(15.dp)) {
-            items(sendMessageViewModel.dialog?.size ?: 0, itemContent = {
-                val localDateTime = sendMessageViewModel.dialog?.get(it)?.date?.split(" ")?.get(1)?.split(":")
+            items(sendMessageViewModel.currDialogHref?.size ?: 0, itemContent = {
+                val localDateTime = sendMessageViewModel.currDialogHref?.get(it)?.date?.split(" ")?.get(1)?.split(":")
                 Message(
-                    messageText = sendMessageViewModel.dialog?.get(it)?.messageText ?: "",
+                    messageText = sendMessageViewModel.currDialogHref?.get(it)?.messageText ?: "",
                     messageDate = (localDateTime?.get(0) ?: "") + ":" + (localDateTime?.get(1) ?: ""),
                     Modifier.padding(5.dp),
-                    (sendMessageViewModel.dialog?.get(it)?.user == thisUser)
+                    (sendMessageViewModel.currDialogHref?.get(it)?.user == thisUser)
                 )
             })
         }

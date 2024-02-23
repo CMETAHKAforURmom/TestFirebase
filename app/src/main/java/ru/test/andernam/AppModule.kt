@@ -21,6 +21,31 @@ import ru.test.andernam.view.MainActivity
 import ru.test.andernam.view.components.screens.messages.MessageListViewModel
 import javax.inject.Singleton
 
+
+//@Module
+//@InstallIn(SingletonComponent::class)
+//object providerDb{
+//    @Singleton
+//    @Provides
+//    fun provideDatabase() : DatabaseVariables {
+//        return DatabaseVariables()
+//    }
+//}
+//@Module(
+//    includes = [
+//        providerDb::class
+//    ]
+//)
+//@InstallIn(SingletonComponent::class)
+//class userModule{
+//
+//    @Singleton
+//    @Provides
+//    fun provideDatabase() : DatabaseVariables {
+//        return DatabaseVariables()
+//    }
+//}
+
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
@@ -54,11 +79,6 @@ object AppModule {
 //    fun provideDatabaseFireBaseHelper(): DatabaseFirebaseHelper{
 //        return DatabaseFirebaseHelper()
 //    }
-    @Singleton
-    @Provides
-    fun provideDatabase() : DatabaseVariables {
-        return DatabaseVariables()
-    }
 
 //    @Singleton
 //    @Provides
