@@ -12,7 +12,7 @@ data class UserInfo(
     var dialogsList: MutableList<String>
 )
 fun defaultUserInfo(userId: String): UserInfo{
-    return UserInfo(mutableStateOf(userId), mutableStateOf("A"), mutableStateOf(null), mutableStateListOf(""))
+    return UserInfo(mutableStateOf(userId), mutableStateOf(""), mutableStateOf(null), mutableStateListOf(""))
 }
 
 fun getDialogId(user: UserInfo, thisUser: String): String{

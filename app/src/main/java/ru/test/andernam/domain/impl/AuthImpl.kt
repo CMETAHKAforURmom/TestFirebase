@@ -1,29 +1,44 @@
-package ru.test.andernam.domain.newest.impl
+package ru.test.andernam.domain.impl
 
 import android.app.Activity
 import android.content.Context
 import android.util.Log
 import com.google.firebase.FirebaseException
+import com.google.firebase.appcheck.ktx.appCheck
+import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.ktx.initialize
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.tasks.await
 import ru.test.andernam.data.DatabaseVariables
-import ru.test.andernam.domain.newest.api.AuthApi
+import ru.test.andernam.domain.api.AuthApi
 import java.util.concurrent.TimeUnit
-
+import javax.inject.Inject
+import javax.inject.Singleton
 
 private var storedVerificationId: String? = null
 
-class AuthImpl(private val database: DatabaseVariables) : AuthApi {
+@Singleton
+class AuthImpl @Inject constructor (private val database: DatabaseVariables) : AuthApi {
 
-//    var activity: Activity? = null
+    fun checkEnter(): Boolean{
+        if (database.user != null)
+            database.userPhone = database.user?.phoneNumber
+        return database.user != null
+    }
 
     override fun sendSMS(phone: String, context: Context) {
+        Firebase.initialize(context = context)
+        Firebase.appCheck.installAppCheckProviderFactory(
+            PlayIntegrityAppCheckProviderFactory.getInstance(),
+        )
+        database.auth.setLanguageCode("ru")
         val callBack = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
             override fun onVerificationCompleted(credential: PhoneAuthCredential) {
                 database.user = database.auth.currentUser
@@ -31,6 +46,7 @@ class AuthImpl(private val database: DatabaseVariables) : AuthApi {
             }
 
             override fun onVerificationFailed(exception: FirebaseException) {
+                Log.i("Login firebase", exception.toString())
             }
 
             override fun onCodeSent(
@@ -38,7 +54,6 @@ class AuthImpl(private val database: DatabaseVariables) : AuthApi {
                 token: PhoneAuthProvider.ForceResendingToken
             ) {
                 storedVerificationId = verivicationId
-//                Log.i("Firebase auth", "ver id is ${storedVerificationId}")
             }
         }
         val options = PhoneAuthOptions.newBuilder(database.auth)
@@ -47,10 +62,8 @@ class AuthImpl(private val database: DatabaseVariables) : AuthApi {
             .setCallbacks(callBack)
             .setActivity(context as Activity)
             .build()
-//        Log.i("Firebase auth", activity!!.toString())
         PhoneAuthProvider.verifyPhoneNumber(options)
     }
-
     @OptIn(DelicateCoroutinesApi::class)
     override suspend fun returnSMS(code: String): Boolean {
 

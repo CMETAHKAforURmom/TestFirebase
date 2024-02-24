@@ -2,15 +2,21 @@ package ru.test.andernam.view.components.screens.entered
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
-import ru.test.andernam.domain.newest.impl.AuthImpl
+import dagger.hilt.android.lifecycle.HiltViewModel
+import ru.test.andernam.domain.impl.AuthImpl
 import javax.inject.Inject
 
-class EnteredViewModel(val context: Context) : ViewModel() {
+@HiltViewModel
+class EnteredViewModel @Inject constructor () : ViewModel() {
 
     @Inject
     lateinit var authClass: AuthImpl
-    fun sendCode(phoneNumber: String){
+    fun sendCode(phoneNumber: String, context: Context){
         authClass.sendSMS(phoneNumber, context)
+    }
+
+    fun checkEnter(): Boolean{
+        return authClass.checkEnter()
     }
 
     suspend fun returnCode(code: String):Boolean{

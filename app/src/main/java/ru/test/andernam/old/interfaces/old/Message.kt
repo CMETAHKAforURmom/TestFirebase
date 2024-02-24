@@ -1,4 +1,4 @@
-package ru.test.andernam.domain.old
+package ru.test.andernam.old.interfaces.old
 
 
 data class Message(

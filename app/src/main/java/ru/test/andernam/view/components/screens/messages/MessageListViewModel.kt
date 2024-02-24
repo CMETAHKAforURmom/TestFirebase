@@ -11,11 +11,9 @@ import javax.inject.Inject
 @HiltViewModel
 class MessageListViewModel @Inject constructor(val storage: DatabaseVariables) : ViewModel() {
 
-//    val storage = provideDatabase()
-
     private fun getUsers() {
         viewModelScope.launch(Dispatchers.IO){
-            storage.getAllUsers()
+            storage.getRecentUsers()
         }
     }
 

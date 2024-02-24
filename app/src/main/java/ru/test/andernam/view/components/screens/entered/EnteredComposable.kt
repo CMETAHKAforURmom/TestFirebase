@@ -1,7 +1,6 @@
 package ru.test.andernam.view.components.screens.entered
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -42,32 +41,32 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import ru.test.andernam.R
 
 
 @SuppressLint("ShowToast")
 @Composable
-fun EnteredComp(onNavigateToMessages: () -> Unit) {
+fun EnteredComp(onNavigateToMessages: () -> Unit,
+                enteredViewModel: EnteredViewModel) {
 
     var expandedPhoneSelect by remember {
         mutableStateOf(false)
     }
-
-    val enteredViewModel = EnteredViewModel(LocalContext.current)
     val options: Map<String, Painter> = mapOf(
         "+7" to painterResource(id = R.drawable.russia),
         "+380" to painterResource(id = R.drawable.ukraine),
         "+375" to painterResource(id = R.drawable.belarus)
     )
 
-    val context = LocalContext.current
     val defaultFlag = painterResource(id = R.drawable.russia)
 
     val coroutine = rememberCoroutineScope()
 
-
+    coroutine.launch {
+        if(enteredViewModel.checkEnter())
+            onNavigateToMessages.invoke()
+    }
 
     var selectedOptionText by remember {
         mutableStateOf(Pair("+7", options.getOrDefault("+7", defaultFlag)))
@@ -165,16 +164,13 @@ fun EnteredComp(onNavigateToMessages: () -> Unit) {
                     modifier = Modifier
                         .fillMaxHeight(),
                     singleLine = true,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-                    label = { "Phone" })
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone))
             }
-
+            val context = LocalContext.current
             Button(
                 onClick = {
-//                    onNavigateToMessages
                     isCodeSend = true
-                    enteredViewModel.sendCode("${selectedOptionText.first}$phoneNumber")
-//                    authClass.enterAcc("${selectedOptionText.first}$phoneNumber")
+                    enteredViewModel.sendCode("${selectedOptionText.first}$phoneNumber", context)
                 },
                 Modifier
                     .fillMaxWidth()
@@ -201,22 +197,15 @@ fun EnteredComp(onNavigateToMessages: () -> Unit) {
                         value = code, onValueChange = { code = it },
                         Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 25.dp, vertical = 35.dp), label = { "Code" },
+                            .padding(horizontal = 25.dp, vertical = 35.dp),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone)
                     )
                     Button(
                         onClick =
                         {
-                            val request = coroutine.async {
-                                Log.i("Try enter", "Trying...")
-                                return@async enteredViewModel.returnCode(code)
-                            }
                             coroutine.launch {
-                                if(request.await()) {
+                                if(enteredViewModel.returnCode(code))
                                     onNavigateToMessages.invoke()
-                                    Log.i("Try enter", "Im good")
-                                }else
-                                    Log.i("Try enter", "Im not good")
                             }
 
                         },

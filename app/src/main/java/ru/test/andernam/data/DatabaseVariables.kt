@@ -5,15 +5,13 @@ import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.snapshots.SnapshotStateList
-import androidx.compose.runtime.toMutableStateList
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import ru.test.andernam.domain.newest.impl.CloudDatabaseAccessImpl
-import ru.test.andernam.domain.old.Message
+import ru.test.andernam.domain.impl.CloudDatabaseAccessImpl
+import ru.test.andernam.old.interfaces.old.Message
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -24,18 +22,24 @@ class DatabaseVariables @Inject constructor() {
     private var firebaseDatabase: FirebaseFirestore = Firebase.firestore
     var user: FirebaseUser? = auth.currentUser
     val currentDialogHref: MutableState<String> = mutableStateOf("")
-    var userPhone: String? = "+79515817958"
+    var userPhone: String? = if (user != null) user?.phoneNumber else ""
     var localUserInfo: UserInfo = defaultUserInfo(userPhone!!)
     val localUsersMessagingInfo: MutableList<UserInfo> = mutableStateListOf()
     val savedMessagesSnapshot: MutableMap<String, MutableList<Message>> = mutableMapOf()
     private val databaseAccess = CloudDatabaseAccessImpl(firebaseDatabase)
 
-    suspend fun sendMessage(message: String, messageLink: String){
-        databaseAccess.sendMessage(message, userPhone!!, messageLink)
+    suspend fun sendMessage(message: String){
+        if(userPhone != null)
+            databaseAccess.sendMessage(message, userPhone!!, currentDialogHref.value)
     }
 
-    fun getMessages(){
-        Log.i("Messages from db", currentDialogHref.value.toString())
+    fun getUserDataByDialog(): UserInfo{
+        var result: UserInfo = defaultUserInfo("")
+        localUsersMessagingInfo.forEach {
+            if(it.dialogsList.contains(currentDialogHref.value))
+                result = it
+        }
+        return result
     }
 
     fun selectDialogHref(dialogHref: String){
@@ -43,14 +47,15 @@ class DatabaseVariables @Inject constructor() {
         savedMessagesSnapshot[dialogHref] = databaseAccess.getDialogSnapshot(dialogHref)
         Log.i("Navigation with...", savedMessagesSnapshot[dialogHref].toString())
     }
-
-//    fun getDialogMessageElements(dialogHref: String): SnapshotStateList<Message>{
-//        return databaseAccess.getDialogSnapshot(dialogHref)
-//    }
-
     suspend fun getRecentUsers(){
-        databaseAccess.downloadDialogs(localUserInfo).forEach{
-            localUsersMessagingInfo.add(it)
+        databaseAccess.downloadDialogs(localUserInfo).forEach{downloadedUser ->
+            var downloadFailed = false
+            localUsersMessagingInfo.forEach { existingUser ->
+                if(downloadedUser.userId.value == existingUser.userId.value)
+                    downloadFailed = true
+            }
+            if(!downloadFailed)
+                localUsersMessagingInfo.add(downloadedUser)
         }
     }
 
@@ -64,29 +69,9 @@ class DatabaseVariables @Inject constructor() {
         }
     }
 
-    suspend fun getAllUsers() {
-        databaseAccess.downloadAllUsers().forEach {
-            localUsersMessagingInfo.add(it)
-        }
-    }
-
     suspend fun uploadUserInfo(imageHref: Uri, name: String): Result<String>{
         localUserInfo.userName.value = name
         localUserInfo.userImageHref.value = imageHref
         return databaseAccess.uploadUserInfo(imageHref, name, userPhone!!)
     }
-
-//    private suspend fun getUser(userId: String): UserInfo? {
-//        var userDownload: UserInfo? = null
-//        localUsersMessagingInfo.forEach {
-//            userDownload = if (it.userId.value == userId)
-//                it
-//            else {
-//                localUsersMessagingInfo.add(databaseAccess.downloadProfile(userId))
-//                localUsersMessagingInfo.last()
-//            }
-//        }
-//        return userDownload
-//    }
-
 }

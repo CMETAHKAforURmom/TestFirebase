@@ -1,4 +1,4 @@
-package ru.test.andernam.domain.newest.api
+package ru.test.andernam.domain.api
 
 import android.content.Context
 

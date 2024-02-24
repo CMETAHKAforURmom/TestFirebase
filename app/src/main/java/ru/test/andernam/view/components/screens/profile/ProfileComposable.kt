@@ -28,7 +28,8 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 
 @Composable
-fun MainComp(profileViewModel: ProfileViewModel) {
+fun MainComp(profileViewModel: ProfileViewModel,
+             navigateToEnter: () -> Unit) {
 
     var uriForUpload by remember {
         mutableStateOf(Uri.EMPTY)
@@ -38,9 +39,6 @@ fun MainComp(profileViewModel: ProfileViewModel) {
     }
     val localProfilePhotoUri = profileViewModel.storage.localUserInfo.userImageHref
     val userName = profileViewModel.storage.localUserInfo.userName
-    var isPairUpdated by remember {
-        mutableStateOf(true)
-    }
 
     val launcher =
         rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
@@ -50,9 +48,7 @@ fun MainComp(profileViewModel: ProfileViewModel) {
             }
         }
 
-
     Box(modifier = Modifier.fillMaxSize()) {
-
         Column(
             Modifier
                 .fillMaxSize()
@@ -63,7 +59,7 @@ fun MainComp(profileViewModel: ProfileViewModel) {
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(localProfilePhotoUri.value)
                     .build(),
-                contentDescription = "Translated description of what the image contains",
+                contentDescription = "Your avatar",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .fillMaxSize(0.5f)
@@ -99,7 +95,7 @@ fun MainComp(profileViewModel: ProfileViewModel) {
                     .fillMaxWidth(0.5f),
                 onClick = {
                     profileViewModel.exitAccount()
-                    isPairUpdated = true
+                    navigateToEnter.invoke()
                 }
             ) {
                 Text(text = "Sign out")

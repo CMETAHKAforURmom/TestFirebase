@@ -6,6 +6,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import ru.test.andernam.AppModule.provideCurrMessageImpl
+import ru.test.andernam.AppModule.provideEnterImpl
 import ru.test.andernam.navigation.apis.HomeApi
 import ru.test.andernam.view.components.screens.messages.BlogComp
 import ru.test.andernam.view.components.screens.messages.MessageListViewModel
@@ -17,7 +18,6 @@ class HomeImpl : HomeApi {
     override val homeRoute = "home"
     override val profileRoute = "$homeRoute/profile"
     override val messagesRoute = "$homeRoute/messages"
-    val startRoute = messagesRoute
 
     override fun registerGraph(
         navGraphBuilder: NavGraphBuilder,
@@ -25,7 +25,8 @@ class HomeImpl : HomeApi {
         modifier: Modifier
     ) {
         navGraphBuilder.composable(profileRoute) {
-            MainComp(hiltViewModel<ProfileViewModel>())
+            MainComp(hiltViewModel<ProfileViewModel>()
+            ) { navController.navigate(provideEnterImpl().enterRoute) }
         }
         navGraphBuilder.composable(messagesRoute) {
             BlogComp(

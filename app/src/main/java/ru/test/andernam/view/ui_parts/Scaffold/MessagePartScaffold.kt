@@ -1,6 +1,5 @@
 package ru.test.andernam.view.ui_parts.Scaffold
 
-import android.net.Uri
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -14,12 +13,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Send
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,44 +25,34 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import ru.test.andernam.R
-//import ru.test.andernam.view.components.navigateTo
+import ru.test.andernam.data.UserInfo
 
-var opponentImage = mutableStateOf(Uri.EMPTY)
-var opponentName = mutableStateOf("")
-
-fun setOpponentData(opponentImageGet: MutableState<Uri>, opponentNameGet: MutableState<String>){
-    opponentImage = opponentImageGet
-    opponentName = opponentNameGet
-}
 
 @Composable
-fun TopMessageScaffold() {
-    val back = LocalContext.current.getString(R.string.back)
+fun TopMessageScaffold(back: () -> Unit,
+                       userInfo: UserInfo) {
+
     Row(modifier = Modifier
         .fillMaxWidth()
         .size(64.dp), verticalAlignment = Alignment.CenterVertically) {
         Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back", modifier = Modifier.clickable {
-//            navigateTo(back)
+            back.invoke()
         })
         AsyncImage(
-            model = opponentImage.value, contentDescription = "Image profile",
+            model = userInfo.userImageHref.value, contentDescription = "Image profile",
             modifier = Modifier
                 .padding(15.dp)
                 .size(54.dp)
                 .clip(CircleShape)
         )
-        Text(text = opponentName.value)
+        Text(text = userInfo.userName.value)
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BottomMessageScaffold() {
-
+fun BottomMessageScaffold(actionSend: (String) -> Unit) {
     var message by remember{
         mutableStateOf("")
     }
@@ -77,7 +64,7 @@ Row(modifier = Modifier
             .border(1.dp, Color.DarkGray, RoundedCornerShape(35f)))
         Icon(imageVector = Icons.Default.Send, contentDescription = "Send action", modifier = Modifier
             .clickable {
-//                userClass.sendMessage(message)
+                actionSend(message)
                 message = ""
             }
             .size(42.dp))

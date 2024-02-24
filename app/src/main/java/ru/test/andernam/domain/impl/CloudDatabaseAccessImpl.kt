@@ -1,4 +1,4 @@
-package ru.test.andernam.domain.newest.impl
+package ru.test.andernam.domain.impl
 
 import android.net.Uri
 import androidx.compose.runtime.mutableStateListOf
@@ -10,10 +10,11 @@ import com.google.firebase.storage.ktx.storage
 import kotlinx.coroutines.tasks.await
 import ru.test.andernam.data.UserInfo
 import ru.test.andernam.data.defaultUserInfo
-import ru.test.andernam.domain.newest.api.CloudDatabaseAccessApi
-import ru.test.andernam.domain.old.Message
+import ru.test.andernam.domain.api.CloudDatabaseAccessApi
+import ru.test.andernam.old.interfaces.old.Message
 import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Locale
 import java.util.UUID
 
 class CloudDatabaseAccessImpl(private val databaseVariables: FirebaseFirestore) :
@@ -34,7 +35,8 @@ class CloudDatabaseAccessImpl(private val databaseVariables: FirebaseFirestore) 
             defaultUserInfo(userId)
         }
     }
-    suspend fun downloadDialogs(localUser: UserInfo): List<UserInfo>{
+
+    suspend fun downloadDialogs(localUser: UserInfo): List<UserInfo> {
         val usersList = mutableListOf<UserInfo>()
         localUser.dialogsList.forEach {
             usersList.add(downloadProfile(it.split("|")[0]))
@@ -42,28 +44,21 @@ class CloudDatabaseAccessImpl(private val databaseVariables: FirebaseFirestore) 
         return usersList
     }
 
-    fun getDialogSnapshot(dialogHref: String): SnapshotStateList<Message>{
+    fun getDialogSnapshot(dialogHref: String): SnapshotStateList<Message> {
         val snapshotMessageDialog: SnapshotStateList<Message> = mutableStateListOf()
-        databaseVariables.collection("dialogs").document(dialogHref).addSnapshotListener{snapshot, exception ->
-            snapshot?.data?.forEach{
-                snapshotMessageDialog.add(Message(it.key.split("|")[0], it.key.split("|")[1], it.value.toString()))
+        databaseVariables.collection("dialogs").document(dialogHref)
+            .addSnapshotListener { snapshot, exception ->
+                snapshot?.data?.forEach {
+                    val newMessage = Message(
+                        it.key.split("|")[0],
+                        it.key.split("|")[1],
+                        it.value.toString()
+                    )
+                    if (!snapshotMessageDialog.contains(newMessage))
+                        snapshotMessageDialog.add(newMessage)
+                }
             }
-        }
         return snapshotMessageDialog
-    }
-    suspend fun downloadAllUsers(): MutableList<UserInfo> {
-        val userInfoList = mutableListOf<UserInfo>()
-        val task = databaseVariables.collection("usersData").get()
-        task.await()
-        task.result.documents.forEach {
-            userInfoList += UserInfo(
-                mutableStateOf(it.id),
-                mutableStateOf(it.data?.get("clientData").toString()),
-                mutableStateOf(Uri.parse(it.data?.get("profilePhoto").toString())),
-                mutableStateListOf(it.data?.get("dialogs").toString())
-            )
-        }
-        return userInfoList
     }
 
     override suspend fun uploadUserInfo(
@@ -84,7 +79,7 @@ class CloudDatabaseAccessImpl(private val databaseVariables: FirebaseFirestore) 
 
     override suspend fun sendMessage(message: String, userId: String, messageLink: String) {
         databaseVariables.collection("dialogs").document(messageLink).update(
-            "${SimpleDateFormat("yyyy,M,dd hh:mm:ss").format(Date())}|$userId", message
+            "${SimpleDateFormat("yyyy,M,dd hh:mm:ss", Locale.ROOT).format(Date())}|$userId", message
         )
     }
 }
