@@ -27,7 +27,7 @@ class CloudDatabaseAccessImpl(private val databaseVariables: FirebaseFirestore) 
                 userId = mutableStateOf(userId),
                 mutableStateOf(taskDownload.result.data?.get("clientData")?.toString() ?: ""),
                 mutableStateOf(Uri.parse(taskDownload.result.data?.get("profilePhoto").toString())),
-                mutableStateListOf(taskDownload.result.data?.get("dialogs").toString())
+                mutableListOf(taskDownload.result.data?.get("dialogs").toString())
             )
         } else {
             databaseVariables.collection("usersData").document(userId)

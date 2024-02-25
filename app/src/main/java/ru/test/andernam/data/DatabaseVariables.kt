@@ -22,7 +22,7 @@ class DatabaseVariables @Inject constructor() {
     private var firebaseDatabase: FirebaseFirestore = Firebase.firestore
     var user: FirebaseUser? = auth.currentUser
     val currentDialogHref: MutableState<String> = mutableStateOf("")
-    var userPhone: String? = if (user != null) user?.phoneNumber else ""
+    var userPhone: String? = if (user != null) user?.phoneNumber else "+79123456789"
     var localUserInfo: UserInfo = defaultUserInfo(userPhone!!)
     val localUsersMessagingInfo: MutableList<UserInfo> = mutableStateListOf()
     val savedMessagesSnapshot: MutableMap<String, MutableList<Message>> = mutableMapOf()
@@ -35,9 +35,12 @@ class DatabaseVariables @Inject constructor() {
 
     fun getUserDataByDialog(): UserInfo{
         var result: UserInfo = defaultUserInfo("")
-        localUsersMessagingInfo.forEach {
-            if(it.dialogsList.contains(currentDialogHref.value))
-                result = it
+        localUsersMessagingInfo.forEach {user ->
+            Log.i("Select user is", "$user ${currentDialogHref.value }")
+            user.dialogsList.forEach {
+                if(currentDialogHref.value in it)
+                    result = user
+            }
         }
         return result
     }
@@ -73,5 +76,8 @@ class DatabaseVariables @Inject constructor() {
         localUserInfo.userName.value = name
         localUserInfo.userImageHref.value = imageHref
         return databaseAccess.uploadUserInfo(imageHref, name, userPhone!!)
+    }
+    init {
+        getUserDataByDialog()
     }
 }

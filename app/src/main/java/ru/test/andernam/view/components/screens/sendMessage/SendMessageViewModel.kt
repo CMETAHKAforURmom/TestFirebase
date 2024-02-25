@@ -21,5 +21,6 @@ class SendMessageViewModel @Inject constructor(val storage: DatabaseVariables): 
     }
 
     init {
+        storage.getUserDataByDialog()
     }
 }
