@@ -3,6 +3,9 @@ package ru.test.andernam.domain.impl
 import android.app.Activity
 import android.content.Context
 import android.util.Log
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.FirebaseException
 import com.google.firebase.appcheck.ktx.appCheck
 import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory
@@ -27,6 +30,7 @@ private var storedVerificationId: String? = null
 @Singleton
 class AuthImpl @Inject constructor (private val database: DatabaseVariables) : AuthApi {
 
+
     fun checkEnter(): Boolean{
         if (database.user != null)
             database.userPhone = database.user?.phoneNumber
@@ -46,7 +50,7 @@ class AuthImpl @Inject constructor (private val database: DatabaseVariables) : A
             }
 
             override fun onVerificationFailed(exception: FirebaseException) {
-                Log.i("Login firebase", exception.toString())
+                Log.i("Login firebase exception", exception.toString())
             }
 
             override fun onCodeSent(
