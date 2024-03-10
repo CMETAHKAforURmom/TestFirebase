@@ -5,7 +5,8 @@
     <string name="profile">profile</string>
     <string name="messages">messages</string>
     <string name="message_screen">messageScreen</string>
-<!--    ???-->
+    <!--    ???-->
     <string name="back">back</string>
     <string name="default_screen">default</string>
+    <string name="title_activity_enter">EnterActivity</string>
 </resources>

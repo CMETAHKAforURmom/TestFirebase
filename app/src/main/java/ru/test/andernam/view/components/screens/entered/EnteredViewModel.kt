@@ -19,6 +19,10 @@ class EnteredViewModel @Inject constructor () : ViewModel() {
         return authClass.checkEnter()
     }
 
+    fun signWithGoogle(context: Context){
+//        authClass.signInWithGoogle()
+    }
+
     suspend fun returnCode(code: String):Boolean{
         return authClass.returnSMS(code)
     }

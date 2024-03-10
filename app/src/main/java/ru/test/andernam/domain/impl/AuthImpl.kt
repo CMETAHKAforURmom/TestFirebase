@@ -1,5 +1,6 @@
 package ru.test.andernam.domain.impl
 
+//import ru.test.andernam.view.context
 import android.app.Activity
 import android.content.Context
 import android.util.Log
@@ -25,9 +26,10 @@ import javax.inject.Singleton
 private var storedVerificationId: String? = null
 
 @Singleton
-class AuthImpl @Inject constructor (private val database: DatabaseVariables) : AuthApi {
+class AuthImpl @Inject constructor(private val database: DatabaseVariables) : AuthApi {
 
-    fun checkEnter(): Boolean{
+
+    fun checkEnter(): Boolean {
         if (database.user != null)
             database.userPhone = database.user?.phoneNumber
         return database.user != null
@@ -64,6 +66,7 @@ class AuthImpl @Inject constructor (private val database: DatabaseVariables) : A
             .build()
         PhoneAuthProvider.verifyPhoneNumber(options)
     }
+
     @OptIn(DelicateCoroutinesApi::class)
     override suspend fun returnSMS(code: String): Boolean {
 

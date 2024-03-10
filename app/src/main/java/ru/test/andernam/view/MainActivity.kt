@@ -3,27 +3,26 @@ package ru.test.andernam.view
 //import androidx.hilt.navigation.compose.hiltViewModel
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
 import androidx.navigation.compose.rememberNavController
-import com.google.firebase.appcheck.ktx.appCheck
-import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.ktx.initialize
 import dagger.hilt.android.AndroidEntryPoint
 import ru.test.andernam.view.theme.TestFirebaseTheme
 import ru.test.andernam.view.ui_parts.Scaffold.MainScaffold
-
-//lateinit var userClass: DownloadUploadHelp
+import javax.inject.Inject
 
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+class MainActivity @Inject constructor() : ComponentActivity() {
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
+//        context = this
         super.onCreate(savedInstanceState)
 
+//        getActive()
+//        signInWithGoogle()
         setContent {
             val navController = rememberNavController()
             TestFirebaseTheme {
@@ -31,10 +30,13 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
+
     init {
-        Firebase.initialize(context = this)
-        Firebase.appCheck.installAppCheckProviderFactory(
-            PlayIntegrityAppCheckProviderFactory.getInstance(),
-        )
+        Log.i("Main activity", "Initilize")
+//        Firebase.initialize(context = this)
+//        Firebase.appCheck.installAppCheckProviderFactory(
+//            PlayIntegrityAppCheckProviderFactory.getInstance(),
+//        )
     }
 }

@@ -40,6 +40,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import ru.test.andernam.R
@@ -107,7 +108,6 @@ fun EnteredComp(onNavigateToMessages: () -> Unit,
                     Row(
                         modifier = Modifier
                             .border(1.dp, Color.DarkGray, RoundedCornerShape(35f))
-//                    .height(60.dp)
                             .width(120.dp)
                             .fillMaxHeight()
                             .clickable {
@@ -177,6 +177,12 @@ fun EnteredComp(onNavigateToMessages: () -> Unit,
                     .padding(horizontal = 25.dp)
             ) {
                 Text(text = "Send!")
+            }
+
+            Row {
+                Button(onClick = { enteredViewModel.signWithGoogle(context) }) {
+                    Image(painter = painterResource(id = R.drawable.google_icon_png), contentDescription = "Sign in google")
+                }
             }
         }
 

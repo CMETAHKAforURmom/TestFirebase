@@ -82,4 +82,5 @@ class CloudDatabaseAccessImpl(private val databaseVariables: FirebaseFirestore) 
             "${SimpleDateFormat("yyyy,M,dd hh:mm:ss", Locale.ROOT).format(Date())}|$userId", message
         )
     }
+
 }
