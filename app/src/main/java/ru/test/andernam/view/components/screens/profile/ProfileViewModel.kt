@@ -1,12 +1,10 @@
 package ru.test.andernam.view.components.screens.profile
 
 import android.net.Uri
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import ru.test.andernam.data.DatabaseVariables
 import javax.inject.Inject

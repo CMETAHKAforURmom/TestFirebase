@@ -15,7 +15,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import ru.test.andernam.view.theme.TestFirebaseTheme
 import ru.test.andernam.view.ui_parts.Scaffold.MainScaffold
 
-//lateinit var userClass: DownloadUploadHelp
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {

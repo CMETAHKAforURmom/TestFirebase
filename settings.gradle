@@ -16,5 +16,4 @@ dependencyResolutionManagement {
 rootProject.name = "TestFirebase"
 include ':app.main'
 project(':app.main').projectDir = new File(rootDir, 'app/')
-include ':app.main'
 include ':appmodule'
