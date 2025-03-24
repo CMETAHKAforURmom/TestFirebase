@@ -1,15 +1,16 @@
 package ru.test.andernam
 
+import android.content.Context
+import androidx.credentials.CredentialManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import ru.test.andernam.navigation.apis.HomeApi
-import ru.test.andernam.navigation.apis.MessageApi
 import ru.test.andernam.navigation.impls.CurrMessageImpl
 import ru.test.andernam.navigation.impls.EnterImpl
 import ru.test.andernam.navigation.impls.HomeImpl
-import ru.test.andernam.navigation.impls.MessageImpl
 import javax.inject.Singleton
 
 @Module
@@ -21,17 +22,17 @@ object AppModule {
     fun provideCurrMessageImpl(): CurrMessageImpl{
         return CurrMessageImpl()
     }
-
+    @Singleton
     @Provides
     fun provideEnterImpl(): EnterImpl{
         return EnterImpl()
     }
+    @Singleton
     @Provides
     fun provideHomeImpl(): HomeApi{
         return HomeImpl()
     }
+    @Singleton
     @Provides
-    fun provideMessageImpl(): MessageApi{
-        return MessageImpl()
-    }
+    fun provideCredentialManager(@ApplicationContext context: Context) = CredentialManager.create(context)
 }

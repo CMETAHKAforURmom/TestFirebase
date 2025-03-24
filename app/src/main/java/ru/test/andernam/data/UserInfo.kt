@@ -4,15 +4,18 @@ import android.net.Uri
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import java.util.UUID
 
 data class UserInfo(
-    var userId: MutableState<String>,
+    var userId: String,
     var userName: MutableState<String>,
     var userImageHref: MutableState<Uri?>,
     var dialogsList: MutableList<String>
 )
-fun defaultUserInfo(userId: String): UserInfo{
-    return UserInfo(mutableStateOf(userId), mutableStateOf(""), mutableStateOf(null), mutableStateListOf(""))
+fun defaultUserInfo(): UserInfo{
+    return UserInfo((""), mutableStateOf(""), mutableStateOf(null), mutableStateListOf(""))
 }
 
 fun getDialogId(user: UserInfo, thisUser: String): String{
@@ -23,4 +26,3 @@ fun getDialogId(user: UserInfo, thisUser: String): String{
     }
     return findingHref
 }
-

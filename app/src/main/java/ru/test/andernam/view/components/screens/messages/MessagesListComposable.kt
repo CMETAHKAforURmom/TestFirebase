@@ -1,6 +1,6 @@
 package ru.test.andernam.view.components.screens.messages
 
-import android.net.Uri
+import android.util.Log
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -18,22 +18,34 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Send
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import ru.test.andernam.data.getDialogId
+import kotlinx.coroutines.launch
+import ru.test.andernam.data.UserInfo
 
 @Composable
 fun BlogComp(
     actionToGo: () -> Unit,
     messageListViewModel: MessageListViewModel
 ) {
+    val recentUsers = messageListViewModel.recentUsers
+
+    Log.i("View Messages", "$recentUsers")
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -44,18 +56,14 @@ fun BlogComp(
                 .padding(15.dp)
                 .align(Alignment.TopCenter)
         ) {
-            items(messageListViewModel.storage.localUsersMessagingInfo.size, itemContent = {
+            items(recentUsers.size, itemContent = {
+                if (recentUsers[it] != null)
                 CardElementUser(
-                    getDialogId(
-                        messageListViewModel.storage.localUsersMessagingInfo[it],
-                        messageListViewModel.storage.localUserInfo.userId.value
-                    ),
-                    messageListViewModel.storage.localUsersMessagingInfo[it].userName.value,
-                    messageListViewModel.storage.localUsersMessagingInfo[it].userImageHref.value,
-                ) { dialogHref ->
+                    recentUsers[it]!!,
+                    actionToGo = { dialogHref ->
                     actionToGo.invoke()
                     messageListViewModel.selectDialog(dialogHref)
-                }
+                }, methodGetHref = {opponentUser -> messageListViewModel.startMessaging(opponentUser)})
             })
         }
     }
@@ -64,12 +72,14 @@ fun BlogComp(
 
 @Composable
 fun CardElementUser(
-    profileLinkL: String,
-    name: String,
-    profileImg: Uri?,
-    actionToGo: (String) -> Unit
+    opponentUser: UserInfo,
+    actionToGo: (String) -> Unit,
+    methodGetHref: suspend (UserInfo) -> String
 ) {
-//    val message = LocalContext.current.getString(R.string.message_screen)
+    var dialogHref by remember {
+        mutableStateOf("")
+    }
+    val coroutine = rememberCoroutineScope()
     Spacer(modifier = Modifier.height(15.dp))
     Row(
         modifier = Modifier
@@ -79,7 +89,7 @@ fun CardElementUser(
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         AsyncImage(
-            model = profileImg, contentDescription = "Image profile",
+            model = opponentUser.userImageHref.value, contentDescription = "Image profile",
             modifier = Modifier
                 .padding(15.dp)
                 .size(64.dp)
@@ -87,12 +97,15 @@ fun CardElementUser(
         )
 
         Row(modifier = Modifier.padding(15.dp)) {
-            Text(text = name, modifier = Modifier.padding(15.dp))
+            Text(text = opponentUser.userName.value, modifier = Modifier.padding(15.dp))
             Icon(
                 Icons.Default.Send,
                 contentDescription = "Send",
                 modifier = Modifier.clickable {
-                    actionToGo(profileLinkL)
+                    coroutine.launch {
+                        dialogHref = methodGetHref(opponentUser)
+                        actionToGo(dialogHref)
+                    }
                 }
             )
         }

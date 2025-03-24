@@ -15,15 +15,15 @@
       },
       "oauth_client": [
         {
-          "client_id": "984303206594-ia51t3i06a4jhgpt408ffmvnhutb44ai.apps.googleusercontent.com",
+          "client_id": "984303206594-o6v86b7vb5u3vt3okjelrgsfu9mtguf5.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "ru.test.andernam",
-            "certificate_hash": "68570a4c365001074e8b741b7978e0d09188896a"
+            "certificate_hash": "637ee218f8666fa42b928f88a4cc134eae0995d5"
           }
         },
         {
-          "client_id": "984303206594-sp6e69d4106pafu4ahn2knt95mc305iq.apps.googleusercontent.com",
+          "client_id": "984303206594-vh67ja2iohsu8i0nskvnspmeik8jsqmt.apps.googleusercontent.com",
           "client_type": 3
         }
       ],

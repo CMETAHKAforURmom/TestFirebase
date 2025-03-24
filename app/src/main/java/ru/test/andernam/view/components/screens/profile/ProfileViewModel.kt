@@ -12,45 +12,24 @@ import javax.inject.Inject
 @HiltViewModel
 class ProfileViewModel @Inject constructor(val storage: DatabaseVariables) : ViewModel() {
 
-    fun exitAccount(){
+    fun exitAccount() {
         storage.auth.signOut()
         storage.user = null
     }
 
-    private suspend fun downloadThisProfile(){
+    private suspend fun downloadThisProfile() {
         storage.getThisUser()
     }
 
-    fun saveUserData(imageHref: Uri, name: String){
+    fun saveUserData(imageHref: Uri, name: String) {
         viewModelScope.launch(Dispatchers.IO) {
             storage.uploadUserInfo(imageHref, name)
         }
     }
-init {
-    viewModelScope.launch {
-        downloadThisProfile()
+
+    init {
+        viewModelScope.launch(Dispatchers.IO) {
+            downloadThisProfile()
+        }
     }
-
-}
-
-
-//    fun exitAccount() {
-//        authThingClass.signOut()
-//    }
-//
-//    var nameFromDB = mutableStateOf("")
-//    var linkFromDB = mutableStateOf(Uri.EMPTY)
-//
-//    fun saveUserData() {
-//        database.uploadInfo(linkFromDB.value, nameFromDB.value)
-//    }
-//
-//    init {
-//        MainScope().launch {
-//            liveUserData.stateFlowProfileInfo.collectLatest {
-//                nameFromDB.value = it?.name ?: nameFromDB.toString()
-//                linkFromDB.value = it?.linkImage
-//            }
-//        }
-//    }
 }

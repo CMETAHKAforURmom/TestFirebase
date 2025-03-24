@@ -2,6 +2,7 @@ package ru.test.andernam.view.ui_parts.Scaffold
 
 import android.annotation.SuppressLint
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.padding
@@ -10,18 +11,24 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import kotlinx.coroutines.launch
 import ru.test.andernam.AppModule.provideCurrMessageImpl
 import ru.test.andernam.AppModule.provideHomeImpl
+import ru.test.andernam.data.DatabaseVariables
 import ru.test.andernam.navigation.AppNavGraph
+import ru.test.andernam.view.components.screens.messages.MessageListViewModel
 import ru.test.andernam.view.components.screens.sendMessage.SendMessageViewModel
+import javax.inject.Inject
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -29,18 +36,22 @@ import ru.test.andernam.view.components.screens.sendMessage.SendMessageViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScaffold(
-    navController: NavHostController
+    navController: NavHostController,
+    storage: DatabaseVariables
 ) {
     var showBottomBar by remember {
         mutableStateOf(false)
     }
 
-    val sendViewModel = hiltViewModel<SendMessageViewModel>()
+    val  coroutine = rememberCoroutineScope()
 
-    var showTopBar by remember {
+    var showOpponentTopInfo by remember {
         mutableStateOf(false)
     }
     var messageScreen by remember {
+        mutableStateOf(false)
+    }
+    var showSearchUser by remember {
         mutableStateOf(false)
     }
     val navDestination by navController.currentBackStackEntryAsState()
@@ -49,17 +60,22 @@ fun MainScaffold(
             navDestination?.destination?.route == provideHomeImpl().profileRoute ||
             navDestination?.destination?.route == provideHomeImpl().messagesRoute ||
             navDestination?.destination?.route == provideCurrMessageImpl().messageRoute)
+    showSearchUser = (navDestination?.destination?.route == provideHomeImpl().messagesRoute)
     messageScreen = (navDestination?.destination?.route == provideCurrMessageImpl().messageRoute)
-    showTopBar = (navDestination?.destination?.route == provideCurrMessageImpl().messageRoute)
+    showOpponentTopInfo =
+        (navDestination?.destination?.route == provideCurrMessageImpl().messageRoute || showSearchUser)
 
     Scaffold(
         topBar = {
-            AnimatedVisibility(visible = showTopBar) {
-                TopAppBar(title = {
-                    TopMessageScaffold(
-                        back = { navController.navigateUp() },
-                        userInfo = sendViewModel.storage.getUserDataByDialog()
-                    )
+            AnimatedVisibility(visible = showOpponentTopInfo) {
+                TopAppBar(title = {Log.i("showSearchUser is", "$showSearchUser")
+                    if (showSearchUser)
+                        TopMessageList(actionToGo = {navController.navigate(provideCurrMessageImpl().messageRoute)}, storage)
+                    else
+                        TopMessageScaffold(
+                            back = { navController.navigateUp() },
+                            userInfo = storage.opponentUser
+                        )
                 })
             }
         },
@@ -67,7 +83,7 @@ fun MainScaffold(
             AnimatedVisibility(visible = showBottomBar) {
                 BottomAppBar(content = {
                     if (messageScreen)
-                        BottomMessageScaffold { sendViewModel.sendMessage(it) }
+                        BottomMessageScaffold {  coroutine.launch { storage.sendMessage(it)} }
                     else
                         BottomBarNavigation(
                             mapOf(

@@ -15,6 +15,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,9 +38,8 @@ fun MainComp(profileViewModel: ProfileViewModel,
     var localUri by remember {
         mutableStateOf(Uri.EMPTY)
     }
-    val localProfilePhotoUri = profileViewModel.storage.localUserInfo.userImageHref
-    val userName = profileViewModel.storage.localUserInfo.userName
-
+    val localUserState = profileViewModel.storage.localUserFlow.collectAsState()
+    val userName = localUserState.value?.userName
     val launcher =
         rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
             if (uri != null) {
@@ -57,7 +57,7 @@ fun MainComp(profileViewModel: ProfileViewModel,
 
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data(localProfilePhotoUri.value)
+                    .data(localUserState.value?.userImageHref?.value)
                     .build(),
                 contentDescription = "Your avatar",
                 contentScale = ContentScale.Crop,
@@ -69,7 +69,7 @@ fun MainComp(profileViewModel: ProfileViewModel,
                     }
             )
             TextField(
-                value = userName.value,
+                value = userName?.value!!,
                 onValueChange = { userName.value = it },
                 Modifier
                     .fillMaxWidth(0.85f)

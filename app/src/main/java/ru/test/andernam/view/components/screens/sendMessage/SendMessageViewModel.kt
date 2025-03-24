@@ -1,5 +1,6 @@
 package ru.test.andernam.view.components.screens.sendMessage
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,9 +19,5 @@ class SendMessageViewModel @Inject constructor(val storage: DatabaseVariables): 
         viewModelScope.launch {
             storage.sendMessage(message)
         }
-    }
-
-    init {
-        storage.getUserDataByDialog()
     }
 }

@@ -1,6 +1,7 @@
 package ru.test.andernam.domain.impl
 
 import android.net.Uri
+import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -11,11 +12,14 @@ import kotlinx.coroutines.tasks.await
 import ru.test.andernam.data.UserInfo
 import ru.test.andernam.data.defaultUserInfo
 import ru.test.andernam.domain.api.CloudDatabaseAccessApi
-import ru.test.andernam.old.interfaces.old.Message
+import ru.test.andernam.data.Message
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.UUID
+import androidx.core.net.toUri
+import com.google.android.gms.tasks.Task
+import com.google.firebase.firestore.DocumentSnapshot
 
 class CloudDatabaseAccessImpl(private val databaseVariables: FirebaseFirestore) :
     CloudDatabaseAccessApi {
@@ -24,38 +28,74 @@ class CloudDatabaseAccessImpl(private val databaseVariables: FirebaseFirestore) 
         taskDownload.await()
         return if (taskDownload.isSuccessful && taskDownload.result.exists()) {
             UserInfo(
-                userId = mutableStateOf(userId),
+                userId = userId,
                 mutableStateOf(taskDownload.result.data?.get("clientData")?.toString() ?: ""),
-                mutableStateOf(Uri.parse(taskDownload.result.data?.get("profilePhoto").toString())),
-                mutableListOf(taskDownload.result.data?.get("dialogs").toString())
+                mutableStateOf(taskDownload.result.data?.get("profilePhoto").toString().toUri()),
+                taskDownload.result.data?.get("dialogs").toString().split(";").toMutableList()
             )
         } else {
             databaseVariables.collection("usersData").document(userId)
                 .set(mapOf("clientData" to " ", "profilePhoto" to " ", "dialogs" to ""))
-            defaultUserInfo(userId)
+            defaultUserInfo()
         }
     }
 
-    suspend fun downloadDialogs(localUser: UserInfo): List<UserInfo> {
-        val usersList = mutableListOf<UserInfo>()
-        localUser.dialogsList.forEach {
-            usersList.add(downloadProfile(it.split("|")[0]))
+    suspend fun downloadUserAndDialogs(userId: String, dialogsHref: String): Map<UserInfo, List<Message>>{
+        return mapOf(downloadProfile(userId) to getDialogSnapshot(dialogsHref).toList())
+    }
+
+    override suspend fun startNewDialog(thisUser: UserInfo, opponentUser: UserInfo): String {
+        var newDialogUID = UUID.randomUUID().toString()
+        try {
+            databaseVariables.collection("dialogs").document(newDialogUID).set("initialize" to " ")
+            var usersOldDialogs =
+                databaseVariables.collection("usersData").document(thisUser.userId.toString()).get()
+                    .await().get("dialogs").toString()
+            if (usersOldDialogs.isNotEmpty()) {
+                usersOldDialogs += ";${opponentUser.userId}|$newDialogUID"
+            } else usersOldDialogs = "${opponentUser.userId}|$newDialogUID"
+            databaseVariables.collection("usersData").document(thisUser.userId.toString())
+                .update("dialogs", usersOldDialogs)
+            usersOldDialogs =
+                databaseVariables.collection("usersData").document(opponentUser.userId.toString()).get()
+                    .await().get("dialogs").toString()
+            if (usersOldDialogs.isNotEmpty()) {
+                usersOldDialogs += ";${thisUser.userId}|$newDialogUID"
+            } else usersOldDialogs = "${thisUser.userId}|$newDialogUID"
+            databaseVariables.collection("usersData").document(opponentUser.userId.toString())
+                .update("dialogs", usersOldDialogs)
+
+        } catch (e: Exception) {
+            Log.i("Creating new dialog error:", e.toString())
         }
+        return newDialogUID
+    }
+
+    override suspend fun downloadDialogs(localUser: UserInfo): List<UserInfo> {
+        val usersList = mutableListOf<UserInfo>()
+        if (localUser.dialogsList.isNotEmpty() && localUser.dialogsList.any { it.isNotBlank() } && localUser.dialogsList.any {it.contains("|")})
+            localUser.dialogsList.forEach {
+                usersList.add(downloadProfile(it.split("|")[0]))
+            }
         return usersList
     }
 
-    fun getDialogSnapshot(dialogHref: String): SnapshotStateList<Message> {
+    override fun getDialogSnapshot(dialogHref: String): SnapshotStateList<Message> {
         val snapshotMessageDialog: SnapshotStateList<Message> = mutableStateListOf()
         databaseVariables.collection("dialogs").document(dialogHref)
             .addSnapshotListener { snapshot, exception ->
                 snapshot?.data?.forEach {
-                    val newMessage = Message(
-                        it.key.split("|")[0],
-                        it.key.split("|")[1],
-                        it.value.toString()
-                    )
-                    if (!snapshotMessageDialog.contains(newMessage))
-                        snapshotMessageDialog.add(newMessage)
+                    try {
+                        val newMessage = Message(
+                            it.key.split("|")[0],
+                            it.key.split("|")[1],
+                            it.value.toString()
+                        )
+                        if (!snapshotMessageDialog.contains(newMessage))
+                            snapshotMessageDialog.add(newMessage)
+                    } catch (nullException: IndexOutOfBoundsException) {
+                        Log.i("UnSuccess when getting messages", nullException.message.toString())
+                    }
                 }
             }
         return snapshotMessageDialog
@@ -65,7 +105,7 @@ class CloudDatabaseAccessImpl(private val databaseVariables: FirebaseFirestore) 
         imageHref: Uri,
         name: String,
         userId: String
-    ): Result<String> {
+    ): Result<Unit> {
         Firebase.storage.reference.child("$userId/${UUID.randomUUID()}").putFile(imageHref)
             .addOnSuccessListener {
                 it.storage.downloadUrl.addOnSuccessListener { thisUri ->
@@ -74,7 +114,7 @@ class CloudDatabaseAccessImpl(private val databaseVariables: FirebaseFirestore) 
                 }
             }
         databaseVariables.collection("usersData").document(userId).update("clientData", name)
-        return Result.success("Success!")
+        return Result.success(Unit)
     }
 
     override suspend fun sendMessage(message: String, userId: String, messageLink: String) {

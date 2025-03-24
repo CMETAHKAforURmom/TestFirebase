@@ -19,6 +19,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -44,7 +45,7 @@ fun SendMessageScreen(
     val lazyColumnState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
     var previousDialogSize by remember{
-        mutableStateOf(0)
+        mutableIntStateOf(0)
     }
 
     var canScrollDown by remember{
@@ -74,7 +75,7 @@ fun SendMessageScreen(
                     messageText = sendMessageViewModel.currDialogHref?.get(it)?.messageText ?: "",
                     messageDate = (localDateTime?.get(0) ?: "") + ":" + (localDateTime?.get(1) ?: ""),
                     Modifier.padding(5.dp),
-                    (sendMessageViewModel.currDialogHref?.get(it)?.user == sendMessageViewModel.storage.userPhone)
+                    (sendMessageViewModel.currDialogHref?.get(it)?.user == sendMessageViewModel.storage.userUID)
                 )
             })
         }

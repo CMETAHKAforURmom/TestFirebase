@@ -8,7 +8,6 @@ import androidx.navigation.compose.NavHost
 import ru.test.andernam.AppModule.provideCurrMessageImpl
 import ru.test.andernam.AppModule.provideEnterImpl
 import ru.test.andernam.AppModule.provideHomeImpl
-import ru.test.andernam.AppModule.provideMessageImpl
 import ru.test.andernam.navigation.apis.FeatureApi
 
 @Composable
@@ -16,15 +15,12 @@ fun AppNavGraph(
     modifier: Modifier = Modifier,
     navController: NavHostController
 ) {
-    NavHost(navController = navController, startDestination = provideHomeImpl().profileRoute, modifier) {
+    NavHost(navController = navController, startDestination = provideEnterImpl().enterRoute, modifier) {
         register(
             provideHomeImpl(),
             navController = navController
         )
-        register(
-            provideMessageImpl(),
-            navController = navController
-        )
+
         register(
             provideEnterImpl(),
             navController = navController

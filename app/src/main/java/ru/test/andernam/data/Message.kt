@@ -1,5 +1,4 @@
-package ru.test.andernam.old.interfaces.old
-
+package ru.test.andernam.data
 
 data class Message(
     val date: String,
