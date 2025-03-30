@@ -16,8 +16,8 @@ import androidx.room.*
 )
 data class MessageEntity(
     @PrimaryKey val messageId: String,
-    val dialogId: String,
     val date: String,
     val user: String,
-    val messageText: String
+    val messageText: String,
+    val dialogId: String
 )

@@ -20,4 +20,6 @@ import ru.test.andernam.data.entities.UserInfoEntity
 abstract class AppDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
     abstract fun selfUserDao(): SelfUserDao
+    abstract fun dialogDao(): DialogsDao
+    abstract fun messageDao(): MessagesDao
 }

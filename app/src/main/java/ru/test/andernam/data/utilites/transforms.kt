@@ -25,6 +25,14 @@ fun SelfUserEntity.toSelfUser(opponentsList: Map<UserInfo, List<Message>>): Self
         messages = opponentsList
     )
 
+fun UserInfo.toEntity(selfUserId: String): UserInfoEntity = UserInfoEntity(
+    opponentId = 0,
+    selfUserId = selfUserId,
+    userId = userId,
+    name = userName.value,
+    imageHref = userImageHref.value.toString()
+)
+
 fun UserInfoEntity.toUserInfo(dialogsList: List<String>): UserInfo =
     UserInfo(
         userId = userId,
@@ -41,9 +49,34 @@ fun SelfUser.toEntity(): SelfUserEntity =
         imageHref = userImageHref.value.toString()
     )
 
-fun MessageEntity.toMessage(): Message =
-    Message(date = date, user = user, messageText = messageText)
+fun Message.toEntity(): MessageEntity = MessageEntity(messageId = "${System.currentTimeMillis()}_${user}_$messageText", date = date, user = user, messageText = messageText, dialogId = dialogId)
 
+fun MessageEntity.toMessage(): Message =
+    Message(date = date, user = user, messageText = messageText, dialogId = dialogId)
+
+fun DialogData.toMap(users: List<UserInfoEntity>): Map<UserInfo, List<Message>> {
+
+    var output = emptyMap<UserInfo, List<Message>>()
+    var localMessagesList = emptyList<Message>()
+    users.forEach { user ->
+        var findingDialog: DialogEntity? = null
+
+        this.dialogs.forEach { dialog ->
+            if (dialog.opponentId == user.opponentId) {
+                findingDialog = dialog
+            }
+        }
+
+        this.messages.forEach { message ->
+
+            if (message.dialogId == findingDialog?.dialogId)
+                localMessagesList += message.toMessage()
+        }
+        if(findingDialog != null)
+            output += Pair(user.toUserInfo(listOf(findingDialog.dialogId)), localMessagesList)
+    }
+    return output
+}
 
 fun SelfUser.toDialogData(): DialogData {
     val dialogs = mutableListOf<DialogEntity>()

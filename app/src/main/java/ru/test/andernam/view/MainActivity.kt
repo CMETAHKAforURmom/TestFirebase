@@ -13,8 +13,9 @@ import ru.test.andernam.view.theme.TestFirebaseTheme
 import ru.test.andernam.view.ui_parts.Scaffold.MainScaffold
 import javax.inject.Inject
 
-//  Поиск пользователей??
-//  КЕШИРОВАНИЕ В БД!!!
+//  Поиск пользователей - анимация
+//  КЕШИРОВАНИЕ В БД!!! Карта Юзер\сообщения!!! рекативное обновление
+
 //  Плохо работает первый вход(при том, иногда дважды)
 //  Авторизация по номеру
 //  Загрузка сообщений в БД и обратно

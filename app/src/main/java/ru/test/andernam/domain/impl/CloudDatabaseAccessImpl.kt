@@ -23,6 +23,7 @@ import com.google.firebase.firestore.DocumentSnapshot
 
 class CloudDatabaseAccessImpl(private val databaseVariables: FirebaseFirestore) :
     CloudDatabaseAccessApi {
+
     override suspend fun downloadProfile(userId: String): UserInfo {
         val taskDownload = databaseVariables.collection("usersData").document(userId).get()
         taskDownload.await()
@@ -40,7 +41,10 @@ class CloudDatabaseAccessImpl(private val databaseVariables: FirebaseFirestore) 
         }
     }
 
-    suspend fun downloadUserAndDialogs(userId: String, dialogsHref: String): Map<UserInfo, List<Message>>{
+    suspend fun downloadUserAndDialogs(
+        userId: String,
+        dialogsHref: String
+    ): Map<UserInfo, List<Message>> {
         return mapOf(downloadProfile(userId) to getDialogSnapshot(dialogsHref).toList())
     }
 
@@ -57,7 +61,8 @@ class CloudDatabaseAccessImpl(private val databaseVariables: FirebaseFirestore) 
             databaseVariables.collection("usersData").document(thisUser.userId.toString())
                 .update("dialogs", usersOldDialogs)
             usersOldDialogs =
-                databaseVariables.collection("usersData").document(opponentUser.userId.toString()).get()
+                databaseVariables.collection("usersData").document(opponentUser.userId.toString())
+                    .get()
                     .await().get("dialogs").toString()
             if (usersOldDialogs.isNotEmpty()) {
                 usersOldDialogs += ";${thisUser.userId}|$newDialogUID"
@@ -73,53 +78,58 @@ class CloudDatabaseAccessImpl(private val databaseVariables: FirebaseFirestore) 
 
     override suspend fun downloadDialogs(localUser: UserInfo): List<UserInfo> {
         val usersList = mutableListOf<UserInfo>()
-        if (localUser.dialogsList.isNotEmpty() && localUser.dialogsList.any { it.isNotBlank() } && localUser.dialogsList.any {it.contains("|")})
+        if (localUser.dialogsList.isNotEmpty() && localUser.dialogsList.any { it.isNotBlank() } && localUser.dialogsList.any {
+                it.contains(
+                    "|"
+                )
+            })
             localUser.dialogsList.forEach {
                 usersList.add(downloadProfile(it.split("|")[0]))
             }
         return usersList
     }
 
-    override fun getDialogSnapshot(dialogHref: String): SnapshotStateList<Message> {
+    override suspend fun getDialogSnapshot(dialogHref: String): SnapshotStateList<Message> {
         val snapshotMessageDialog: SnapshotStateList<Message> = mutableStateListOf()
-        databaseVariables.collection("dialogs").document(dialogHref)
-            .addSnapshotListener { snapshot, exception ->
-                snapshot?.data?.forEach {
-                    try {
-                        val newMessage = Message(
-                            it.key.split("|")[0],
-                            it.key.split("|")[1],
-                            it.value.toString()
-                        )
-                        if (!snapshotMessageDialog.contains(newMessage))
-                            snapshotMessageDialog.add(newMessage)
-                    } catch (nullException: IndexOutOfBoundsException) {
-                        Log.i("UnSuccess when getting messages", nullException.message.toString())
-                    }
+        val snapshotDialogs = databaseVariables.collection("dialogs").document(dialogHref)
+            .get().await()
+        if (snapshotDialogs.exists())
+            snapshotDialogs.data?.forEach {
+                try {
+                    val newMessage = Message(
+                        it.key.split("|")[0],
+                        it.key.split("|")[1],
+                        it.value.toString(),
+                        dialogHref
+                    )
+                    if (!snapshotMessageDialog.contains(newMessage))
+                        snapshotMessageDialog.add(newMessage)
+                } catch (nullException: IndexOutOfBoundsException) {
+                    Log.i("UnSuccess when getting messages", nullException.message.toString())
                 }
             }
-        return snapshotMessageDialog
-    }
+    return snapshotMessageDialog
+}
 
-    override suspend fun uploadUserInfo(
-        imageHref: Uri,
-        name: String,
-        userId: String
-    ): Result<Unit> {
-        Firebase.storage.reference.child("$userId/${UUID.randomUUID()}").putFile(imageHref)
-            .addOnSuccessListener {
-                it.storage.downloadUrl.addOnSuccessListener { thisUri ->
-                    databaseVariables.collection("usersData").document(userId)
-                        .update("profilePhoto", thisUri)
-                }
+override suspend fun uploadUserInfo(
+    imageHref: Uri,
+    name: String,
+    userId: String
+): Result<Unit> {
+    Firebase.storage.reference.child("$userId/${UUID.randomUUID()}").putFile(imageHref)
+        .addOnSuccessListener {
+            it.storage.downloadUrl.addOnSuccessListener { thisUri ->
+                databaseVariables.collection("usersData").document(userId)
+                    .update("profilePhoto", thisUri)
             }
-        databaseVariables.collection("usersData").document(userId).update("clientData", name)
-        return Result.success(Unit)
-    }
+        }
+    databaseVariables.collection("usersData").document(userId).update("clientData", name)
+    return Result.success(Unit)
+}
 
-    override suspend fun sendMessage(message: String, userId: String, messageLink: String) {
-        databaseVariables.collection("dialogs").document(messageLink).update(
-            "${SimpleDateFormat("yyyy,M,dd hh:mm:ss", Locale.ROOT).format(Date())}|$userId", message
-        )
-    }
+override suspend fun sendMessage(message: String, userId: String, messageLink: String) {
+    databaseVariables.collection("dialogs").document(messageLink).update(
+        "${SimpleDateFormat("yyyy,M,dd hh:mm:ss", Locale.ROOT).format(Date())}|$userId", message
+    )
+}
 }
