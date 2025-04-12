@@ -69,10 +69,10 @@ fun EnteredComp(
 
     val coroutine = rememberCoroutineScope()
 
-    LaunchedEffect(Unit) {
-        if (enteredViewModel.checkEnter())
-            onNavigateToMessages.invoke()
-    }
+//    LaunchedEffect(Unit) {
+//        if (enteredViewModel.checkEnter())
+//            onNavigateToMessages.invoke()
+//    }
 
     var selectedOptionText by remember {
         mutableStateOf(Pair("+7", options.getOrDefault("+7", defaultFlag)))

@@ -11,11 +11,18 @@ import ru.test.andernam.navigation.apis.HomeApi
 import ru.test.andernam.navigation.impls.CurrMessageImpl
 import ru.test.andernam.navigation.impls.EnterImpl
 import ru.test.andernam.navigation.impls.HomeImpl
+import ru.test.andernam.navigation.impls.SplashImpl
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
+
+    @Singleton
+    @Provides
+    fun provideSplashImpl(): SplashImpl{
+        return SplashImpl()
+    }
 
     @Singleton
     @Provides

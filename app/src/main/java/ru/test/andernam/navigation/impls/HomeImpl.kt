@@ -35,5 +35,4 @@ class HomeImpl : HomeApi {
             )
         }
     }
-//navController.navigate(provideHomeImpl().messagesRoute)
 }

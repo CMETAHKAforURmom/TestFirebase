@@ -18,7 +18,6 @@ import javax.inject.Singleton
 class MessageListViewModel @Inject constructor(val storage: DatabaseVariables) : ViewModel() {
 
     private var _allUsers = MutableStateFlow<List<UserInfo>>(emptyList())
-    val allUsers = _allUsers.asStateFlow()
     val recentUsers = storage.localUserFlow.value.messages.keys.toMutableList()
 
     private fun getRecentUsers() {
@@ -33,7 +32,6 @@ class MessageListViewModel @Inject constructor(val storage: DatabaseVariables) :
     }
 
     suspend fun startMessaging(selectedUser: UserInfo) : String{
-        Log.i("Messages view model", "$selectedUser")
         storage.opponentUser = selectedUser
         return if(!recentUsers.contains(selectedUser)) withContext(Dispatchers.Default){
             storage.startMessaging(selectedUser)

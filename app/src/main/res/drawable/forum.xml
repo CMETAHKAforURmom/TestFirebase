@@ -1,0 +1,18 @@
+<!-- res/drawable/forum.xml -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="100dp"
+    android:height="100dp"
+    android:viewportWidth="80"
+    android:viewportHeight="80">
+    <group
+        android:name="icon_group"
+        android:pivotX="11" 
+        android:pivotY="11" 
+        android:translateX="30"
+        android:translateY="30">
+        <path
+            android:name="icon_path"
+            android:fillColor="#000000"
+            android:pathData="M17,12V3A1,1 0 0,0 16,2H3A1,1 0 0,0 2,3V17L6,13H16A1,1 0 0,0 17,12M21,6H19V15H6V17A1,1 0 0,0 7,18H18L22,22V7A1,1 0 0,0 21,6Z" />
+    </group>
+</vector>

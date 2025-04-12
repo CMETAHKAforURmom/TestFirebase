@@ -17,5 +17,5 @@ interface CloudDatabaseAccessApi {
 
     suspend fun sendMessage(message: String, userId: String, messageLink: String)
 
-    fun getDialogSnapshot(dialogHref: String): SnapshotStateList<Message>
+    suspend fun getDialogSnapshot(dialogHref: String):SnapshotStateList<Message>
 }
