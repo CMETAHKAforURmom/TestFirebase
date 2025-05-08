@@ -228,7 +228,6 @@ fun EnteredComp(
                                 if (enteredViewModel.returnCode(code))
                                     onNavigateToMessages.invoke()
                             }
-
                         },
                     Modifier
                         .fillMaxWidth()

@@ -11,7 +11,8 @@ data class SelfUser(
     var userName: MutableState<String>,
     var userImageHref: MutableState<Uri?>,
     var dialogs: MutableList<String>,
-    var messages: Map<UserInfo, List<Message>>
+    //  MUTABLE MAP
+    var messages: MutableMap<UserInfo, List<Message>>
 )
 fun emptySelfUser() = SelfUser("", mutableStateOf(""), mutableStateOf(Uri.EMPTY),
-    mutableStateListOf(), mapOf())
+    mutableStateListOf(), mutableMapOf())

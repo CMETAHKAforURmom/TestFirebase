@@ -9,6 +9,7 @@ import androidx.navigation.compose.NavHost
 import ru.test.andernam.AppModule.provideCurrMessageImpl
 import ru.test.andernam.AppModule.provideEnterImpl
 import ru.test.andernam.AppModule.provideHomeImpl
+import ru.test.andernam.AppModule.provideSearchImpl
 import ru.test.andernam.AppModule.provideSplashImpl
 import ru.test.andernam.navigation.apis.FeatureApi
 
@@ -38,6 +39,10 @@ fun AppNavGraph(
         )
         register(
             provideCurrMessageImpl(),
+            navController = navController
+        )
+        register(
+            provideSearchImpl(),
             navController = navController
         )
     }

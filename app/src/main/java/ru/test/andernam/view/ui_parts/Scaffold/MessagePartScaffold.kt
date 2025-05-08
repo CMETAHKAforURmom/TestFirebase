@@ -3,7 +3,6 @@ package ru.test.andernam.view.ui_parts.Scaffold
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -27,7 +26,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
@@ -51,10 +49,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ru.test.andernam.data.DatabaseVariables
 import ru.test.andernam.data.UserInfo
-import ru.test.andernam.view.components.screens.messages.CardElementUser
+import ru.test.andernam.view.components.screens.messages.messageList.CardElementUser
 
 @Composable
-fun TopMessageList(actionToGo: () -> Unit, storage: DatabaseVariables) {
+fun TopMessageList(actionToGo: () -> Unit, storage: DatabaseVariables, testAction: () -> Unit) {
 
     var isSearching by remember {
         mutableStateOf(false)
@@ -68,100 +66,22 @@ fun TopMessageList(actionToGo: () -> Unit, storage: DatabaseVariables) {
     var searchText by remember {
         mutableStateOf("")
     }
-    val focusRequester = remember { FocusRequester() }
-
-    val coroutineScope = rememberCoroutineScope()
-
 
     Column(modifier = Modifier
         .fillMaxWidth()
         .fillMaxHeight()) {
-        Spacer(modifier = Modifier.height(15.dp))
+        Spacer(modifier = Modifier.height(48.dp))
         Row(
             modifier = Modifier
-                .fillMaxWidth().fillMaxHeight()
-                .size(128.dp), verticalAlignment = Alignment.CenterVertically
+                .fillMaxWidth(0.95f), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.End
         ) {
-            OutlinedTextField(
-                value = searchText, onValueChange = {
-                    searchText = it
-                },
-                modifier = Modifier
-                    .height(64.dp)
-                    .padding(0.dp)
-                    .fillMaxWidth(0.9f)
-                    .focusRequester(focusRequester)
-                    .focusTarget()
-                    .onFocusChanged { focusState ->
-                        if (focusState.isFocused && searchText.isNotEmpty()) {
-                            isSearching = true
-                        } else if (!focusState.isFocused) {
-                            isSearching = false
-                        }
-                    },
-                singleLine = true,
-                textStyle = LocalTextStyle.current.copy(
-                    textAlign = TextAlign.Start,
-                    fontSize = 16.sp,
-                    lineHeight = 24.sp
-                ),
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Text,
-                    imeAction = ImeAction.Search
-                ),
-                keyboardActions = KeyboardActions(onSearch = {
-                    if(searchText.isNotEmpty()){
-                        viewUsers = allUsers.filter {
-                            it.userName.value.contains(
-                                searchText,
-                                ignoreCase = true
-                            )
-                        }
-                        isSearching = true
-                    }
-                })
-            )
-
-            LaunchedEffect(Dispatchers.Default) { allUsers = storage.getAllUsers()
-                if(isSearching)
-                    coroutineScope.launch { focusRequester.requestFocus() }}
             Icon(
                 imageVector = Icons.Default.Search,
                 contentDescription = "Search",
-                modifier = Modifier.clickable {
-                    viewUsers = allUsers.filter {
-                    it.userName.value.contains(
-                        searchText,
-                        ignoreCase = true
-                    )
-                }
-                    isSearching = true
+                modifier = Modifier.size(48.dp).clickable {
+                    testAction.invoke()
                 })
         }
-        DropdownMenu(
-            expanded = isSearching,
-            onDismissRequest = { isSearching = false },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.CenterHorizontally),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                viewUsers.forEach { user ->
-                    CardElementUser(
-                        user,
-                        actionToGo = { dialogHref ->
-                            actionToGo.invoke()
-                            storage.selectDialogHref(dialogHref)
-                        },
-                        methodGetHref = { opponentUser -> storage.startMessaging(opponentUser) })
-                }
-                Spacer(modifier = Modifier.height(15.dp))
-            }
-        }
-
     }
 }
 
@@ -170,7 +90,6 @@ fun TopMessageScaffold(
     back: () -> Unit,
     userInfo: UserInfo
 ) {
-
     Row(
         modifier = Modifier
             .fillMaxWidth()

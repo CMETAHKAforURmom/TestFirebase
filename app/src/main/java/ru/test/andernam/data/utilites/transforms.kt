@@ -22,7 +22,7 @@ fun SelfUserEntity.toSelfUser(opponentsList: Map<UserInfo, List<Message>>): Self
         userName = mutableStateOf(name),
         userImageHref = mutableStateOf(imageHref.toUri()),
         dialogs = transformDialogsToList(dialogs).toMutableList(),
-        messages = opponentsList
+        messages = opponentsList.toMutableMap()
     )
 
 fun UserInfo.toEntity(selfUserId: String): UserInfoEntity = UserInfoEntity(

@@ -20,6 +20,7 @@ import java.util.UUID
 import androidx.core.net.toUri
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.DocumentSnapshot
+import ru.test.andernam.data.SelfUser
 
 class CloudDatabaseAccessImpl(private val databaseVariables: FirebaseFirestore) :
     CloudDatabaseAccessApi {
@@ -49,7 +50,7 @@ class CloudDatabaseAccessImpl(private val databaseVariables: FirebaseFirestore) 
         return mapOf(downloadProfile(userId) to getDialogSnapshot(dialogsHref).toList())
     }
 
-    override suspend fun startNewDialog(thisUser: UserInfo, opponentUser: UserInfo): String {
+    override suspend fun startNewDialog(thisUser: SelfUser, opponentUser: UserInfo): String {
         var newDialogUID = UUID.randomUUID().toString()
         try {
             databaseVariables.collection("dialogs").document(newDialogUID).set("initialize" to " ")
@@ -77,14 +78,14 @@ class CloudDatabaseAccessImpl(private val databaseVariables: FirebaseFirestore) 
         return newDialogUID
     }
 
-    override suspend fun downloadDialogs(localUser: UserInfo): List<UserInfo> {
+    override suspend fun downloadDialogs(localUser: SelfUser): List<UserInfo> {
         val usersList = mutableListOf<UserInfo>()
-        if (localUser.dialogsList.isNotEmpty() && localUser.dialogsList.any { it.isNotBlank() } && localUser.dialogsList.any {
+        if (localUser.dialogs.isNotEmpty() && localUser.dialogs.any { it.isNotBlank() } && localUser.dialogs.any {
                 it.contains(
                     "|"
                 )
             })
-            localUser.dialogsList.forEach {
+            localUser.dialogs.forEach {
                 usersList.add(downloadProfile(it.split("|")[0]))
             }
         return usersList

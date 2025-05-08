@@ -13,6 +13,8 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.R
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -33,6 +35,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import kotlinx.coroutines.launch
 import ru.test.andernam.AppModule.provideCurrMessageImpl
 import ru.test.andernam.AppModule.provideHomeImpl
+import ru.test.andernam.AppModule.provideSearchImpl
 import ru.test.andernam.data.DatabaseVariables
 import ru.test.andernam.navigation.AppNavGraph
 import ru.test.andernam.view.theme.*
@@ -55,22 +58,22 @@ fun MainScaffold(
 
     val window = ((LocalContext.current) as? Activity)?.window
     val isDark = isSystemInDarkTheme()
-    SideEffect {
-        window?.apply {
-            setFlags(
-                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
-            )
-            insetsController?.setSystemBarsAppearance(
-                if (isDark) {
-                    WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS.inv()
-                } else {
-                    WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
-                },
-                WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
-            )
-        }
-    }
+//    SideEffect {
+//        window?.apply {
+//            setFlags(
+//                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+//                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+//            )
+//            insetsController?.setSystemBarsAppearance(
+//                if (isDark) {
+//                    WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS.inv()
+//                } else {
+//                    WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
+//                },
+//                WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
+//            )
+//        }
+//    }
 
     showBottomBar = (navDestination?.destination?.route == provideHomeImpl().homeRoute ||
             navDestination?.destination?.route == provideHomeImpl().profileRoute ||
@@ -81,44 +84,45 @@ fun MainScaffold(
     showOpponentTopInfo =
         (navDestination?.destination?.route == provideCurrMessageImpl().messageRoute || showSearchUser)
 
-    Scaffold(
-        topBar = {
-            AnimatedVisibility(visible = showOpponentTopInfo) {
-                TopAppBar(modifier = Modifier.padding(top = 30.dp), title = {
-                    if (showSearchUser)
-                        TopMessageList(actionToGo = {navController.navigate(provideCurrMessageImpl().messageRoute)}, storage)
-                    else
-                        TopMessageScaffold(
-                            back = { navController.navigateUp() },
-                            userInfo = storage.opponentUser
-                        )
-                })
-            }
-        },
-        bottomBar = {
-            AnimatedVisibility(visible = showBottomBar) {
-                BottomAppBar(content = {
-                    if (messageScreen)
-                        BottomMessageScaffold {  coroutine.launch { storage.sendMessage(it)} }
-                    else
-                        BottomBarNavigation(
-                            mapOf(
-                                "Users" to {
-                                    navController.navigate(
-                                        provideHomeImpl().messagesRoute
-                                    )
-                                },
-                                "Profile" to {
-                                    navController.navigate(
-                                        provideHomeImpl().profileRoute
-                                    )
-                                }
-                            )
-                        )
-                }
-                )
-            }
-        }) {
-        AppNavGraph(modifier = Modifier.padding(it), navController = navController)
+    Scaffold(modifier = Modifier.imePadding()
+//        topBar = {
+//            AnimatedVisibility(visible = showOpponentTopInfo) {
+//                TopAppBar(modifier = Modifier.padding(top = 30.dp), title = {
+//                    if (showSearchUser)
+////                        TopMessageList(actionToGo = {navController.navigate(provideCurrMessageImpl().messageRoute)}, storage, testAction = {navController.navigate(provideSearchImpl().route)})
+//                    else
+//                        TopMessageScaffold(
+//                            back = { navController.navigateUp() },
+//                            userInfo = storage.opponentUser
+//                        )
+//                })
+//            }
+//        },
+//        bottomBar = {
+//            AnimatedVisibility(visible = showBottomBar) {
+//                BottomAppBar(content = {
+////                    if (messageScreen)
+////                        BottomMessageScaffold {  coroutine.launch { storage.sendMessage(it)} }
+////                    else
+////                        BottomBarNavigation(
+////                            mapOf(
+////                                "Users" to {
+////                                    navController.navigate(
+////                                        provideHomeImpl().messagesRoute
+////                                    )
+////                                },
+////                                "Profile" to {
+////                                    navController.navigate(
+////                                        provideHomeImpl().profileRoute
+////                                    )
+////                                }
+////                            )
+////                        )
+//                }
+//                )
+//            }
+//        }
+    ) {
+        AppNavGraph(modifier = Modifier.padding(it).imePadding(), navController = navController)
     }
 }

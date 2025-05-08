@@ -4,9 +4,7 @@ import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -20,16 +18,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
-import ru.test.andernam.data.entities.DialogEntity
-import ru.test.andernam.data.entities.MessageEntity
-import ru.test.andernam.data.entities.UserInfoEntity
+import kotlinx.coroutines.withContext
 import ru.test.andernam.data.room.AppDatabase
-import ru.test.andernam.data.room.UserDao
 import ru.test.andernam.data.utilites.toDialogData
 import ru.test.andernam.data.utilites.toEntity
 import ru.test.andernam.data.utilites.toMap
 import ru.test.andernam.data.utilites.toSelfUser
-import ru.test.andernam.data.utilites.transformDialogsToList
 import ru.test.andernam.domain.impl.CloudDatabaseAccessImpl
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -42,36 +36,47 @@ class DatabaseVariables @Inject constructor(private val database: AppDatabase) {
     var user: FirebaseUser? = auth.currentUser
     val currentDialogHref: MutableState<String> = mutableStateOf("")
     var userUID: String? = user?.uid
-    var localUserInfo: UserInfo = defaultUserInfo()
     var opponentUser: UserInfo = defaultUserInfo()
     val localUsersMessagingInfo: MutableList<UserInfo> = mutableStateListOf()
     var savedMessagesSnapshot: MutableMap<String, MutableList<Message>> = mutableMapOf()
     private val _localUserFlow = MutableStateFlow<SelfUser>(emptySelfUser())
     val localUserFlow = _localUserFlow.asStateFlow()
     private val _recentUsers = MutableStateFlow<List<UserInfo?>>(emptyList())
-    val recentUsers = _recentUsers.asStateFlow()
+    private val _allUsers = MutableStateFlow<List<UserInfo>>(emptyList())
+    val allUsers = _allUsers.asStateFlow()
     private val databaseAccess = CloudDatabaseAccessImpl(firebaseDatabase)
     private val coroutine = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
-    //Self User!!
-    suspend fun startMessaging(selectedUser: UserInfo): String {
-        return databaseAccess.startNewDialog(localUserInfo, selectedUser)
-    }
-    suspend fun sendMessage(message: String) {
-        if (userUID != null)
-            databaseAccess.sendMessage(message, userUID!!, currentDialogHref.value)
+    suspend fun startMessaging(selectedUser: UserInfo) : String{
+        opponentUser = selectedUser
+        val recentUsers = localUserFlow.value.messages.keys.toMutableList() as List<UserInfo>
+        val names = recentUsers.map { userInfo -> userInfo.userId }
+        return if(!names.contains(selectedUser.userId)) withContext(Dispatchers.Default){
+            _localUserFlow.value.messages.put(selectedUser, emptyList<Message>())
+            var lastDialogAdded = databaseAccess.startNewDialog(localUserFlow.value, selectedUser)
+            _localUserFlow.value.dialogs.add(selectedUser.userId+ "|" + lastDialogAdded)
+            lastDialogAdded
+        }else {
+            getDialogByUser(selectedUser)
+        }
     }
 
-    //FLOW!!!
-    suspend fun getAllUsers(): MutableList<UserInfo> {
-        var usersList: MutableList<UserInfo> = mutableListOf()
+    suspend fun sendMessage(message: String) {
+        if (userUID != null){
+            databaseAccess.sendMessage(message, userUID!!, currentDialogHref.value)
+        }
+    }
+
+    //DataBase!!!
+    suspend fun getAllUsers() {
         Firebase.firestore.collection("usersData").get().await().documents.map { doc -> doc.id }
-            .forEach { it -> usersList.add(databaseAccess.downloadProfile(it)) }
-        return usersList.filter { it.userId.toString() != userUID }.toMutableList()
+            .forEach { it -> if(it != _localUserFlow.value.userId)
+                _allUsers.value += databaseAccess.downloadProfile(it) }
+        _allUsers.value.distinct()
     }
 
     suspend fun getRecentUsers() {
-        databaseAccess.downloadDialogs(localUserInfo).forEach { downloadedUser ->
+        databaseAccess.downloadDialogs(_localUserFlow.value).forEach { downloadedUser ->
             if (!_recentUsers.value.contains(downloadedUser)) {
                 _recentUsers.value += (downloadedUser)
             }
@@ -109,19 +114,18 @@ class DatabaseVariables @Inject constructor(private val database: AppDatabase) {
             try {
                 val existingSelfUser = database.selfUserDao().getSelfUser()
                 if (existingSelfUser != null) {
-                    val dialogs = database.dialogDao().getDialogs() ?: emptyList()
-                    val messages = database.messageDao().getMessages() ?: emptyList()
+                    val dialogs = database.dialogDao().getDialogs()
+                    val messages = database.messageDao().getMessages()
                     val allUsers = database.userDao().getAllUsers()
                     val mapUserAndDialog = DialogData(dialogs, messages).toMap(allUsers)
                     _localUserFlow.value = existingSelfUser.toSelfUser(mapUserAndDialog)
                     _localUserFlow.value.messages.forEach { user, messages ->
                         savedMessagesSnapshot += Pair(getDialogByUser(user), messages.toMutableStateList())
-                        Log.i("Mapping snapshot", "${savedMessagesSnapshot}")
                     }
 
                 }
             } catch (e: Exception) {
-                Log.i("getThisUser", "Error loading from DB: ${e.message}", e)
+                Log.e("getThisUser", "Error loading from DB: ${e.message}", e)
             }
             val anotherLocalUserInfo = databaseAccess.downloadProfile(userUID!!)
             _localUserFlow.value.userId = anotherLocalUserInfo.userId
@@ -134,12 +138,8 @@ class DatabaseVariables @Inject constructor(private val database: AppDatabase) {
                         unSortedDialog.split("|")[0],
                         unSortedDialog.split("|")[1]
                     ).entries
-                }.associate { it.key to it.value }
+                }.associate { it.key to it.value }.toMutableMap()
 
-//            _localUserFlow.value.messages.keys.forEach { user ->
-//                savedMessagesSnapshot += Pair(getDialogByUser(user), databaseAccess.getDialogSnapshot(getDialogByUser(user)))
-//                Log.i("Mapping snapshot", "${savedMessagesSnapshot}")
-//            }
             database.selfUserDao().updateSelfUser(_localUserFlow.value.toEntity())
             val users = _localUserFlow.value.messages.keys.map { user ->
                 user.toEntity(_localUserFlow.value.userId)
@@ -166,12 +166,12 @@ class DatabaseVariables @Inject constructor(private val database: AppDatabase) {
     }
 
     suspend fun uploadUserInfo(imageHref: Uri, name: String): Result<Unit> {
-        localUserInfo.userName.value = name
-        localUserInfo.userImageHref.value = imageHref
+        _localUserFlow.value.userName.value = name
+        _localUserFlow.value.userImageHref.value = imageHref
         return databaseAccess.uploadUserInfo(imageHref, name, userUID!!)
     }
 
     init {
-        getUserDataByDialog()
+//        getUserDataByDialog()
     }
 }

@@ -1,4 +1,4 @@
-package ru.test.andernam.view.components.screens.profile
+package ru.test.andernam.view.components.screens.users.selfUser
 
 import android.net.Uri
 import androidx.lifecycle.ViewModel
@@ -18,7 +18,7 @@ class ProfileViewModel @Inject constructor(val storage: DatabaseVariables) : Vie
     }
 
     private suspend fun downloadThisProfile() {
-        storage.getThisUser()
+//        storage.getThisUser()
     }
 
     fun saveUserData(imageHref: Uri, name: String) {

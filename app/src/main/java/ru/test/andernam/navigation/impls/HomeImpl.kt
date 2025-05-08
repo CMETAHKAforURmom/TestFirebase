@@ -7,11 +7,12 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import ru.test.andernam.AppModule.provideCurrMessageImpl
 import ru.test.andernam.AppModule.provideEnterImpl
+import ru.test.andernam.AppModule.provideSearchImpl
 import ru.test.andernam.navigation.apis.HomeApi
-import ru.test.andernam.view.components.screens.messages.BlogComp
-import ru.test.andernam.view.components.screens.messages.MessageListViewModel
-import ru.test.andernam.view.components.screens.profile.MainComp
-import ru.test.andernam.view.components.screens.profile.ProfileViewModel
+import ru.test.andernam.view.components.screens.messages.messageList.BlogComp
+import ru.test.andernam.view.components.screens.messages.messageList.MessageListViewModel
+import ru.test.andernam.view.components.screens.users.selfUser.MainComp
+import ru.test.andernam.view.components.screens.users.selfUser.ProfileViewModel
 
 class HomeImpl : HomeApi {
 
@@ -31,7 +32,8 @@ class HomeImpl : HomeApi {
         navGraphBuilder.composable(messagesRoute) {
             BlogComp(
                 {navController.navigate(provideCurrMessageImpl().messageRoute)},
-                hiltViewModel<MessageListViewModel>()
+                hiltViewModel<MessageListViewModel>(),
+                {navController.navigate(provideSearchImpl().route)}
             )
         }
     }

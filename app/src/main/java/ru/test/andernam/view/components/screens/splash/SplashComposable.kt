@@ -54,13 +54,13 @@ import ru.test.andernam.data.SplashState.*
 @Composable
 fun SplashHostComposable(
     splashViewModel: SplashViewModel,
-    onProfile: () -> Unit,
+    onStart: () -> Unit,
     onEnter: () -> Unit
 ) {
     val state = splashViewModel.state.collectAsState()
     LaunchedEffect(state) {
         when (state.value) {
-            is Success -> onProfile.invoke()
+            is Success -> onStart.invoke()
             is NotAuthenticated -> onEnter.invoke()
             else -> {}
         }

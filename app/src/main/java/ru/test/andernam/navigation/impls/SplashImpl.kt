@@ -23,7 +23,7 @@ class SplashImpl: FeatureApi {
     ) {
         navGraphBuilder.composable(route = route){
             SplashHostComposable(hiltViewModel<SplashViewModel>(),
-                { navController.navigate(provideHomeImpl().profileRoute) },
+                { navController.navigate(provideHomeImpl().messagesRoute) },
                 { navController.navigate(provideEnterImpl().enterRoute) })
         }
     }

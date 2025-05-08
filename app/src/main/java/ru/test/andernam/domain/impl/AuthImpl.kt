@@ -3,6 +3,7 @@ package ru.test.andernam.domain.impl
 import android.app.Activity
 import android.content.Context
 import android.util.Log
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
@@ -22,6 +23,7 @@ import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.ktx.initialize
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -34,6 +36,7 @@ import ru.test.andernam.domain.api.AuthApi
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.coroutines.CoroutineContext
 
 private var storedVerificationId: String? = null
 
@@ -102,15 +105,16 @@ class AuthImpl @Inject constructor(
 
     suspend fun tryEnterCredential(idToken: String) {
         val credential = GoogleAuthProvider.getCredential(idToken, null)
+        val coroutine = CoroutineScope(Dispatchers.Default)
         val result = database.auth.signInWithCredential(credential)
             .addOnCompleteListener { task ->
-                if (task.isSuccessful)
+                if (task.isSuccessful) {
                     database.userUID = database.auth.currentUser?.uid ?: ""
+                    coroutine.launch{
+                        database.getThisUser()
+                    }
+                }
             }
-    }
-
-    private suspend fun checkAndCreateUser(user: FirebaseUser){
-
     }
 
     override fun sendSMS(phone: String, context: Context) {

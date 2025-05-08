@@ -8,8 +8,8 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import ru.test.andernam.navigation.apis.CurrMessageApi
-import ru.test.andernam.view.components.screens.sendMessage.SendMessageScreen
-import ru.test.andernam.view.components.screens.sendMessage.SendMessageViewModel
+import ru.test.andernam.view.components.screens.messages.messageScreen.SendMessageScreen
+import ru.test.andernam.view.components.screens.messages.messageScreen.SendMessageViewModel
 
 class CurrMessageImpl : CurrMessageApi {
     override val messageRoute: String = "curr_message"
@@ -21,7 +21,7 @@ class CurrMessageImpl : CurrMessageApi {
         modifier: Modifier
     ) {
         navGraphBuilder.composable(route = messageRoute) {
-            SendMessageScreen(hiltViewModel<SendMessageViewModel>())
+            SendMessageScreen(hiltViewModel<SendMessageViewModel>(), {navController.navigateUp()})
         }
     }
 }

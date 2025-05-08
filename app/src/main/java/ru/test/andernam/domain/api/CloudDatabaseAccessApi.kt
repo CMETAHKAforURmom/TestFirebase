@@ -3,13 +3,14 @@ package ru.test.andernam.domain.api
 import android.net.Uri
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import ru.test.andernam.data.Message
+import ru.test.andernam.data.SelfUser
 import ru.test.andernam.data.UserInfo
 
 interface CloudDatabaseAccessApi {
 
-    suspend fun startNewDialog(thisUser: UserInfo, opponentUser: UserInfo): String
+    suspend fun startNewDialog(thisUser: SelfUser, opponentUser: UserInfo): String
 
-    suspend fun downloadDialogs(localUser: UserInfo): List<UserInfo>
+    suspend fun downloadDialogs(localUser: SelfUser): List<UserInfo>
 
     suspend fun downloadProfile(userId: String): UserInfo?
 

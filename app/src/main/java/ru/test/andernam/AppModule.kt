@@ -11,6 +11,7 @@ import ru.test.andernam.navigation.apis.HomeApi
 import ru.test.andernam.navigation.impls.CurrMessageImpl
 import ru.test.andernam.navigation.impls.EnterImpl
 import ru.test.andernam.navigation.impls.HomeImpl
+import ru.test.andernam.navigation.impls.SearchUsersImpl
 import ru.test.andernam.navigation.impls.SplashImpl
 import javax.inject.Singleton
 
@@ -23,7 +24,6 @@ object AppModule {
     fun provideSplashImpl(): SplashImpl{
         return SplashImpl()
     }
-
     @Singleton
     @Provides
     fun provideCurrMessageImpl(): CurrMessageImpl{
@@ -38,6 +38,11 @@ object AppModule {
     @Provides
     fun provideHomeImpl(): HomeApi{
         return HomeImpl()
+    }
+    @Singleton
+    @Provides
+    fun provideSearchImpl(): SearchUsersImpl{
+        return SearchUsersImpl()
     }
     @Singleton
     @Provides
