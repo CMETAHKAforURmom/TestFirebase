@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import ru.test.andernam.data.DatabaseVariables
+import ru.test.andernam.data.Message
 import javax.inject.Inject
 
 //@Singleton

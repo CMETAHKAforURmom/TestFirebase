@@ -2,28 +2,16 @@ package ru.test.andernam.view
 
 import android.os.Build
 import android.os.Bundle
-import android.view.Window
-import android.view.WindowInsetsController
-import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.graphics.Color
-import androidx.credentials.CredentialManager
 import androidx.navigation.compose.rememberNavController
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import ru.test.andernam.AppModule.provideHomeImpl
 import ru.test.andernam.data.DatabaseVariables
-import ru.test.andernam.view.components.screens.splash.SplashComposable
 import ru.test.andernam.view.theme.TestFirebaseTheme
 import ru.test.andernam.view.ui_parts.Scaffold.MainScaffold
 import javax.inject.Inject
@@ -59,14 +47,18 @@ class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        CoroutineScope(Dispatchers.IO).launch{storage.getThisUser()
+        CoroutineScope(Dispatchers.IO + SupervisorJob()).launch{storage.getThisUser()
         storage.getAllUsers()}
+        window.setWindowAnimations(0)
+        display.supportedModes.find { it.refreshRate == 60f }?.let {
+            val params = window.attributes
+            params.preferredDisplayModeId = it.modeId
+            window.attributes = params
+        }
         setContent {
             val navController = rememberNavController()
-
-
             TestFirebaseTheme{
-                MainScaffold(navController = navController, storage)
+                MainScaffold(navController = navController)
             }
         }
     }

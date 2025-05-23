@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Send
@@ -41,7 +42,7 @@ fun BottomNavigationItemBtn(action: () -> Unit, description: String){
 @Composable
 fun findIconByDescription(description: String): ImageVector{
     return when(description){
-        "Users" -> Icons.Default.Send
+        "Users" -> Icons.AutoMirrored.Filled.Send
         "Profile" -> Icons.Default.AccountBox
         else -> Icons.Default.Build
     }
